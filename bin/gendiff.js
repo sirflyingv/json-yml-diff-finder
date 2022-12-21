@@ -2,4 +2,4 @@
 
 import { programGendiff } from '../index.js';
 
-console.log('kekw');
+console.log('kekw'.toUpperCase());
