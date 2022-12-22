@@ -1,15 +1,21 @@
 import { Command } from 'commander';
 import fs from 'fs';
 import _ from 'lodash';
+import path from 'path';
 
-const readJSONFile = (path) => JSON.parse(fs.readFileSync(path));
+console.log(process.cwd());
+
+const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
+
+const readJSONFile = (path) => JSON.parse(fs.readFileSync(normalizePath(path)));
 
 const getEntriesFromFile = (path) => {
-  const pairs = _.toPairs(readJSONFile(path)).sort();
-  const result = pairs.map((pair) => {
+  const fileData = readJSONFile(path);
+  const keyValuePairs = _.toPairs(fileData).sort();
+  const entries = keyValuePairs.map((pair) => {
     return { key: pair[0], value: pair[1] };
   });
-  return result;
+  return entries;
 };
 
 // const getExtension = (path) => path.split('.').at(-1);
@@ -27,15 +33,15 @@ programGendiff
     const entries1 = getEntriesFromFile(this.args[0]);
     const entries2 = getEntriesFromFile(this.args[1]);
 
-    const expelledEntries = _.differenceWith(entries1, entries2, _.isEqual);
+    const differedEntries = _.differenceWith(entries1, entries2, _.isEqual);
     const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
     const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual);
 
-    expelledEntries.forEach((entry) => (entry.mark = '-'));
+    differedEntries.forEach((entry) => (entry.mark = '-'));
     newEntries.forEach((entry) => (entry.mark = '+'));
     unchangedEntries.forEach((entry) => (entry.mark = ' '));
 
-    const summary = [...expelledEntries, ...newEntries, ...unchangedEntries];
+    const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
 
     const summarySorted = _.orderBy(
       summary,
