@@ -9,9 +9,9 @@ const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
 
 const readJSONFile = (path) => JSON.parse(fs.readFileSync(normalizePath(path)));
 
-const getEntriesFromFile = (path) => {
+const getEntriesFromJSON = (path) => {
   const fileData = readJSONFile(path);
-  const keyValuePairs = _.toPairs(fileData).sort();
+  const keyValuePairs = _.toPairs(fileData);
   const entries = keyValuePairs.map((pair) => {
     return { key: pair[0], value: pair[1] };
   });
@@ -19,8 +19,8 @@ const getEntriesFromFile = (path) => {
 };
 
 export function genDiffJSON(json1, json2) {
-  const entries1 = getEntriesFromFile(json1);
-  const entries2 = getEntriesFromFile(json2);
+  const entries1 = getEntriesFromJSON(json1);
+  const entries2 = getEntriesFromJSON(json2);
 
   const differedEntries = _.differenceWith(entries1, entries2, _.isEqual);
   const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
