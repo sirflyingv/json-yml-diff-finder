@@ -3,8 +3,16 @@ import fs from 'fs';
 import _ from 'lodash';
 
 const readJSONFile = (path) => JSON.parse(fs.readFileSync(path));
-const getEntriesFromFile = (path) => _.toPairs(readJSONFile(path)).sort();
-const getExtension = (path) => path.split('.').at(-1);
+
+const getEntriesFromFile = (path) => {
+  const pairs = _.toPairs(readJSONFile(path)).sort();
+  const result = pairs.map((pair) => {
+    return { key: pair[0], value: pair[1] };
+  });
+  return result;
+};
+
+// const getExtension = (path) => path.split('.').at(-1);
 
 export const programGendiff = new Command();
 
@@ -23,16 +31,22 @@ programGendiff
     const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
     const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual);
 
-    expelledEntries.forEach((el) => el.push('-'));
-    newEntries.forEach((el) => el.push('+'));
-    unchangedEntries.forEach((el) => el.push(' '));
+    expelledEntries.forEach((entry) => (entry.mark = '-'));
+    newEntries.forEach((entry) => (entry.mark = '+'));
+    unchangedEntries.forEach((entry) => (entry.mark = ' '));
 
-    const summary = [...expelledEntries, ...newEntries, ...unchangedEntries].sort();
+    const summary = [...expelledEntries, ...newEntries, ...unchangedEntries];
 
-    const getDiffLine = (entry) => `${entry[2]} ${entry[0]}: ${entry[1]}`;
+    const summarySorted = _.orderBy(
+      summary,
+      [(entry) => entry.key, (entry) => entry.mark],
+      ['asc', 'desc']
+    );
+
+    const getDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
 
     console.log('{');
-    summary.forEach((el) => console.log(getDiffLine(el)));
+    summarySorted.forEach((el) => console.log(getDiffLine(el)));
     console.log('}');
   });
 
