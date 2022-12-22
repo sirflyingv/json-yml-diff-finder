@@ -18,6 +18,34 @@ const getEntriesFromFile = (path) => {
   return entries;
 };
 
+export function genDiffJSON(json1, json2) {
+  const entries1 = getEntriesFromFile(json1);
+  const entries2 = getEntriesFromFile(json2);
+
+  const differedEntries = _.differenceWith(entries1, entries2, _.isEqual);
+  const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
+  const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual);
+
+  differedEntries.forEach((entry) => (entry.mark = '-'));
+  newEntries.forEach((entry) => (entry.mark = '+'));
+  unchangedEntries.forEach((entry) => (entry.mark = ' '));
+
+  const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
+
+  const summarySorted = _.orderBy(
+    summary,
+    [(entry) => entry.key, (entry) => entry.mark],
+    ['asc', 'desc']
+  );
+
+  const getDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
+
+  console.log('{');
+  summarySorted.forEach((el) => console.log(getDiffLine(el)));
+  console.log('}');
+  return summarySorted;
+}
+
 // const getExtension = (path) => path.split('.').at(-1);
 
 export const programGendiff = new Command();
@@ -29,31 +57,6 @@ programGendiff
   .argument('<filepath1>', 'path to first file')
   .argument('<filepath2>', 'path to second file')
   .option('-f, --format <type>', 'output format')
-  .action(function () {
-    const entries1 = getEntriesFromFile(this.args[0]);
-    const entries2 = getEntriesFromFile(this.args[1]);
-
-    const differedEntries = _.differenceWith(entries1, entries2, _.isEqual);
-    const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
-    const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual);
-
-    differedEntries.forEach((entry) => (entry.mark = '-'));
-    newEntries.forEach((entry) => (entry.mark = '+'));
-    unchangedEntries.forEach((entry) => (entry.mark = ' '));
-
-    const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
-
-    const summarySorted = _.orderBy(
-      summary,
-      [(entry) => entry.key, (entry) => entry.mark],
-      ['asc', 'desc']
-    );
-
-    const getDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
-
-    console.log('{');
-    summarySorted.forEach((el) => console.log(getDiffLine(el)));
-    console.log('}');
-  });
+  .action(genDiffJSON);
 
 programGendiff.parse();
