@@ -3,9 +3,9 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 
-console.log(process.cwd());
-
 const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
+
+// const getExtension = (path) => path.split('.').at(-1);
 
 const readJSONFile = (path) => JSON.parse(fs.readFileSync(normalizePath(path)));
 
@@ -40,13 +40,11 @@ export function genDiffJSON(json1, json2) {
 
   const getDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
 
-  console.log('{');
-  summarySorted.forEach((el) => console.log(getDiffLine(el)));
-  console.log('}');
-  return summarySorted;
-}
+  const diffString = ['{', ...summarySorted.map((el) => getDiffLine(el)), '}'].join('\n');
+  console.log(diffString);
 
-// const getExtension = (path) => path.split('.').at(-1);
+  return diffString;
+}
 
 export const programGendiff = new Command();
 
