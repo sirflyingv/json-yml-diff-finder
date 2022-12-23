@@ -15,7 +15,7 @@ const getEntriesFromJSON = (filePath) => {
   const keyValuePairs = _.toPairs(fileData);
   const entries = keyValuePairs.map((pair) => ({
     key: pair[0],
-    value: pair[1],
+    value: pair[1]
   }));
   return entries;
 };
@@ -24,8 +24,7 @@ export function genDiffJSON(json1, json2) {
   const entries1 = getEntriesFromJSON(json1);
   const entries2 = getEntriesFromJSON(json2);
 
-  const addMarkProp = (obj, markStr) =>
-    Object.defineProperty(obj, 'mark', { value: markStr });
+  const addMarkProp = (obj, mark) => ({ ...obj, mark });
 
   const differedEntries = _.differenceWith(entries1, entries2, _.isEqual).map(
     (entry) => addMarkProp(entry, '-')
@@ -46,7 +45,7 @@ export function genDiffJSON(json1, json2) {
   const diffString = [
     '{',
     ...summarySorted.map((el) => makeDiffLine(el)),
-    '}',
+    '}'
   ].join('\n');
   console.log(diffString);
 

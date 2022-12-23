@@ -13,4 +13,5 @@ rules:
     'linebreak-style': 0,
     'operator-linebreak': 0,
     'implicit-arrow-linebreak': 'off',
+    'comma-dangle': ['error', { 'functions': 'never' }],
   }
