@@ -7,14 +7,16 @@ const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
 
 // const getExtension = (path) => path.split('.').at(-1);
 
-const readJSONFile = (path) => JSON.parse(fs.readFileSync(normalizePath(path)));
+const getDataFromJSONFile = (filePath) =>
+  JSON.parse(fs.readFileSync(normalizePath(filePath)));
 
-const getEntriesFromJSON = (path) => {
-  const fileData = readJSONFile(path);
+const getEntriesFromJSON = (filePath) => {
+  const fileData = getDataFromJSONFile(filePath);
   const keyValuePairs = _.toPairs(fileData);
-  const entries = keyValuePairs.map((pair) => {
-    return { key: pair[0], value: pair[1] };
-  });
+  const entries = keyValuePairs.map((pair) => ({
+    key: pair[0],
+    value: pair[1],
+  }));
   return entries;
 };
 
@@ -22,25 +24,30 @@ export function genDiffJSON(json1, json2) {
   const entries1 = getEntriesFromJSON(json1);
   const entries2 = getEntriesFromJSON(json2);
 
-  const differedEntries = _.differenceWith(entries1, entries2, _.isEqual);
-  const newEntries = _.differenceWith(entries2, entries1, _.isEqual);
-  const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual);
+  const addMarkProp = (obj, markStr) =>
+    Object.defineProperty(obj, 'mark', { value: markStr });
 
-  differedEntries.forEach((entry) => (entry.mark = '-'));
-  newEntries.forEach((entry) => (entry.mark = '+'));
-  unchangedEntries.forEach((entry) => (entry.mark = ' '));
+  const differedEntries = _.differenceWith(entries1, entries2, _.isEqual).map(
+    (entry) => addMarkProp(entry, '-')
+  );
+  const newEntries = _.differenceWith(entries2, entries1, _.isEqual).map(
+    (entry) => addMarkProp(entry, '+')
+  );
+  const unchangedEntries = _.intersectionWith(entries1, entries2, _.isEqual).map(
+    (entry) => addMarkProp(entry, ' ')
+  );
 
   const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
 
-  const summarySorted = _.orderBy(
-    summary,
-    [(entry) => entry.key, (entry) => entry.mark],
-    ['asc', 'desc']
-  );
+  const summarySorted = _.orderBy(summary, ['key', 'mark'], ['asc', 'desc']);
 
-  const getDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
+  const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
 
-  const diffString = ['{', ...summarySorted.map((el) => getDiffLine(el)), '}'].join('\n');
+  const diffString = [
+    '{',
+    ...summarySorted.map((el) => makeDiffLine(el)),
+    '}',
+  ].join('\n');
   console.log(diffString);
 
   return diffString;

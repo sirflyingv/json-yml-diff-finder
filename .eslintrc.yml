@@ -1,14 +1,16 @@
 env:
-  browser: false
+  browser: true
   es2021: true
 extends: airbnb-base
 overrides: []
 parserOptions:
   ecmaVersion: latest
   sourceType: module
-rules: { 'no-console': 'off', 
-'import/extensions': 0, 
-'linebreak-style': 0,
-'operator-linebreak': 0,
-'import/prefer-default-export': 0
- }
+rules:
+  {
+    'no-console': 'off',
+    'import/extensions': 0,
+    'linebreak-style': 0,
+    'operator-linebreak': 0,
+    'implicit-arrow-linebreak': 'off',
+  }

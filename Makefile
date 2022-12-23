@@ -3,3 +3,6 @@ install: # basic install
 
 publish: # dry publish
 	npm publish --dry-run 
+
+lint:
+	npx eslint .
