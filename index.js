@@ -22,12 +22,10 @@ function genDiff(filepath1, filepath2) {
 
   const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
 
-  const diffString = [
-    '{',
-    ...summarySorted.map((el) => makeDiffLine(el)),
-    '}'
-  ].join('\n');
+  const output = ['{', ...summarySorted.map((el) => makeDiffLine(el)), '}'].join(
+    '\n'
+  );
 
-  return diffString;
+  return output;
 }
 export default genDiff;
