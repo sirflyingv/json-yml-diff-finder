@@ -1,27 +1,9 @@
-import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
+import { parseEntries } from './src/parsers.js';
 
-const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
-
-// const getExtension = (path) => path.split('.').at(-1);
-
-const getDataFromJSONFile = (filePath) =>
-  JSON.parse(fs.readFileSync(normalizePath(filePath)));
-
-const getEntriesFromJSON = (filePath) => {
-  const fileData = getDataFromJSONFile(filePath);
-  const keyValuePairs = _.toPairs(fileData);
-  const entries = keyValuePairs.map((pair) => ({
-    key: pair[0],
-    value: pair[1]
-  }));
-  return entries;
-};
-
-function genDiffJSON(json1, json2) {
-  const entries1 = getEntriesFromJSON(json1);
-  const entries2 = getEntriesFromJSON(json2);
+function genDiff(filepath1, filepath2) {
+  const entries1 = parseEntries(filepath1);
+  const entries2 = parseEntries(filepath2);
 
   const addMarkProp = (obj, mark) => ({ ...obj, mark });
 
@@ -36,7 +18,6 @@ function genDiffJSON(json1, json2) {
   );
 
   const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
-
   const summarySorted = _.orderBy(summary, ['key', 'mark'], ['asc', 'desc']);
 
   const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
@@ -50,4 +31,4 @@ function genDiffJSON(json1, json2) {
 
   return diffString;
 }
-export default genDiffJSON;
+export default genDiff;

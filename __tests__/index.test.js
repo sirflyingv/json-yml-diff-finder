@@ -14,12 +14,32 @@ const getFixturePath = (filename) =>
 
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-const filepath1 = getFixturePath('file1.json');
-const filepath2 = getFixturePath('file2.json');
+test('gendiff JSON', () => {
+  const filepath1 = getFixturePath('file1.json');
+  const filepath2 = getFixturePath('file2.json');
 
-const result = genDiffJSON(filepath1, filepath2);
-const expectedResult = readFile('expectedResult.txt');
+  const result = genDiffJSON(filepath1, filepath2);
+  const expectedResult = readFile('expectedResult.txt');
 
-test('gendiff', () => {
+  expect(result).toEqual(expectedResult);
+});
+
+test('gendiff YAML', () => {
+  const filepath1 = getFixturePath('file1.yml');
+  const filepath2 = getFixturePath('file2.yaml');
+
+  const result = genDiffJSON(filepath1, filepath2);
+  const expectedResult = readFile('expectedResult.txt');
+
+  expect(result).toEqual(expectedResult);
+});
+
+test('gendiff mixed', () => {
+  const filepath1 = getFixturePath('file1.yml');
+  const filepath2 = getFixturePath('file2.json');
+
+  const result = genDiffJSON(filepath1, filepath2);
+  const expectedResult = readFile('expectedResult.txt');
+
   expect(result).toEqual(expectedResult);
 });
