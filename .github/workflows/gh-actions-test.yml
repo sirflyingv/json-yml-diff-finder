@@ -1,10 +1,17 @@
-
 name: GitHub Actions Demo
 run-name: gendiff test workflow
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  test-and-lint:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event. Buenas dias!"
-
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+      - run: make install
+      - run: make publish
+      - run: make lint
+      - run: make test
