@@ -14,7 +14,7 @@ const getFixturePath = (filename) =>
 
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-test('gendiff JSON', () => {
+test('gendiff flat JSON', () => {
   const filepath1 = getFixturePath('file1.json');
   const filepath2 = getFixturePath('file2.json');
 
@@ -24,7 +24,7 @@ test('gendiff JSON', () => {
   expect(result).toEqual(expectedResult);
 });
 
-test('gendiff YAML', () => {
+test('gendiff flat YAML', () => {
   const filepath1 = getFixturePath('file1.yml');
   const filepath2 = getFixturePath('file2.yaml');
 
@@ -34,7 +34,7 @@ test('gendiff YAML', () => {
   expect(result).toEqual(expectedResult);
 });
 
-test('gendiff mixed', () => {
+test('gendiff flat mixed', () => {
   const filepath1 = getFixturePath('file1.yml');
   const filepath2 = getFixturePath('file2.json');
 
