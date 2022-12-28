@@ -27,7 +27,6 @@ function genDiff(filepath1, filepath2) {
     ...summarySorted.map((el) => makeDiffLine(el)),
     '}'
   ].join('\n');
-  console.log(diffString);
 
   return diffString;
 }
