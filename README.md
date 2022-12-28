@@ -6,4 +6,5 @@
 [![Tests and test coverage](https://github.com/sirflyingv/frontend-project-46/actions/workflows/gh-actions-test.yml/badge.svg)](https://github.com/sirflyingv/frontend-project-46/actions/workflows/gh-actions-test.yml)
 
 Diff of 2 JSON files asciinema sample [link](https://asciinema.org/a/xCQkcJKTUzYjQXw7hHAxkCUYu)
+
 Diff of 2 YAML files asciinema sample [link](https://asciinema.org/a/0JILr63wJB7tvhH8RverpSFC2)
