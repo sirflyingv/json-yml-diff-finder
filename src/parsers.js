@@ -15,7 +15,7 @@ export const getFormat = (filename) => {
   return null;
 };
 
-const getEntries = (obj) => {
+export const getEntries = (obj) => {
   const keyValuePairs = _.toPairs(obj);
   const entries = keyValuePairs.map((pair) => ({
     key: pair[0],

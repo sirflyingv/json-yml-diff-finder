@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 
 import { test, expect } from '@jest/globals';
-import genDiffJSON from '../index.js';
+import { genDiff } from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,13 +12,14 @@ const __dirname = dirname(__filename);
 const getFixturePath = (filename) =>
   path.join(__dirname, '..', '__fixtures__', filename);
 
-const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+const readFile = (filename) =>
+  fs.readFileSync(getFixturePath(filename), 'utf-8');
 
 test('gendiff flat JSON', () => {
   const filepath1 = getFixturePath('file1.json');
   const filepath2 = getFixturePath('file2.json');
 
-  const result = genDiffJSON(filepath1, filepath2);
+  const result = genDiff(filepath1, filepath2);
   const expectedResult = readFile('expectedResult.txt');
 
   expect(result).toEqual(expectedResult);
@@ -28,7 +29,7 @@ test('gendiff flat YAML', () => {
   const filepath1 = getFixturePath('file1.yml');
   const filepath2 = getFixturePath('file2.yaml');
 
-  const result = genDiffJSON(filepath1, filepath2);
+  const result = genDiff(filepath1, filepath2);
   const expectedResult = readFile('expectedResult.txt');
 
   expect(result).toEqual(expectedResult);
@@ -38,7 +39,17 @@ test('gendiff flat mixed', () => {
   const filepath1 = getFixturePath('file1.yml');
   const filepath2 = getFixturePath('file2.json');
 
-  const result = genDiffJSON(filepath1, filepath2);
+  const result = genDiff(filepath1, filepath2);
+  const expectedResult = readFile('expectedResult.txt');
+
+  expect(result).toEqual(expectedResult);
+});
+
+test('gendiff nested JSON', () => {
+  const filepath1 = getFixturePath('tree1.json');
+  const filepath2 = getFixturePath('tree2.json');
+
+  const result = genDiff(filepath1, filepath2);
   const expectedResult = readFile('expectedResult.txt');
 
   expect(result).toEqual(expectedResult);

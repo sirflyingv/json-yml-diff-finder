@@ -1,0 +1,6 @@
+hello: world
+null: null
+is: true
+nested:
+  count: 5
+arr: [1, hola, true]

@@ -1,0 +1,8 @@
+hello: World!
+is: true
+nested:
+  count: 5
+  units: meters
+arr: [1, hola, true]
+peepo: happy
+12: null
