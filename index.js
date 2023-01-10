@@ -48,37 +48,92 @@ const getRecursiveEntries = (obj) => {
 
 const addProp = (obj, propName, propVal) => ({ ...obj, [propName]: propVal });
 
-export function genDiffTree(obj1, obj2) {
-  const entries1 = getRecursiveEntries(obj1);
-  const entries2 = getRecursiveEntries(obj2);
+export function genDiffTree(data1, data2) {
+  const entries1 = getRecursiveEntries(data1).map((entry) =>
+    addProp(entry, 'file', 1)
+  );
+  const entries2 = getRecursiveEntries(data2).map((entry) =>
+    addProp(entry, 'file', 2)
+  );
 
-  // Something like this https://stackoverflow.com/questions/59735236/merging-two-objects-while-keeping-matching-keys
+  const checkEntry = (entry, data) => {
+    // console.log(entry.key, entry.value);
+    const indexOfSameEntry = _.findIndex(data, (el) => el.key === entry.key);
+    if (indexOfSameEntry === -1) {
+      // return `not found... ${entry.key}:${entry.value}`;
+      return {
+        key: entry.key,
+        file1: entry.value,
+        file2: undefined,
+        status: 'not found'
+      };
+    }
 
-  // const markedEntries1 = entries1.map((entry) => isObject(entry)?
-  //   addProp(entry, 'source', 'inFile1')
-  // );
-  // const markedEntries2 = entries2.map((entry) =>
-  //   addProp(entry, 'source', 'inFile2')
-  // );
+    const comparedEntry = data[indexOfSameEntry];
 
-  // return markedEntries1;
-  return entries1;
+    if (_.isEqual(entry.value, comparedEntry.value)) {
+      // return `not changed | ${entry.key}:${entry.value}`;
+      return {
+        key: entry.key,
+        file1: entry.value,
+        file2: comparedEntry.value,
+        status: 'not changed'
+      };
+    }
+    // return `changed! ${entry.key}:${entry.value} to ${comparedEntry.key}:${comparedEntry.value}`;
+    return {
+      key: entry.key,
+      file1: entry.value,
+      file2: comparedEntry.value,
+      status: 'changed'
+    };
+  };
+
+  const iter = (tree1, tree2) => {
+    const comparedFromTree1 = tree1.map((entry) => {
+      if (!entry.nested) {
+        const value = checkEntry(entry, tree2);
+        return { ...value, nested: entry.nested };
+      }
+      if (entry.nested) {
+        const value = iter(
+          entry.value,
+          tree2[_.findIndex(tree2, (el) => el.key === entry.key)].value
+        );
+        return { value, nested: entry.nested };
+      }
+    });
+    const newEntries = tree2
+      .filter(
+        (entry) => _.findIndex(tree1, (el) => el.key === entry.key) === -1
+      )
+      .map((entry) => ({
+        key: entry.key,
+        file1: undefined,
+        file2: entry.value,
+        status: 'new'
+      }));
+    // const newEntries = [];
+
+    return [...comparedFromTree1, ...newEntries];
+  };
+
+  return iter(entries1, entries2);
 }
 
 const data1 = {
   hello: 'world',
   is: true,
-  nested: { count: 5 },
-  nested2: { count: { units: 'meters', n: 50 } },
-  arr: ['peepo', 3, true]
+  nestedProp: { count: 5, units: 'm' },
+  foo: 'bar'
 };
 
 const data2 = {
   hello: 'World!!!',
   is: true,
-  nested: { count: 5, units: 'meters' },
-  peepo: 'Happy',
-  nested2: { count: 50 }
+  nestedProp: { count: 6, units: 'm' },
+  nested2: { kek: 12 },
+  peepo: 'Happy'
 };
 
 const plain1 = {
@@ -95,8 +150,8 @@ const plain2 = {
   float: 1.25
 };
 
-// console.log(genDiffTree(data1, data2));
 console.log(genDiffTree(data1, data2));
+// console.log(genDiffTree(plain1, plain2));
 
 // const isFlat = (obj) => {
 //   const values = Object.values(obj);
