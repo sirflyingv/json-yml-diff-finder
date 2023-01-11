@@ -96,14 +96,31 @@ export function genDiffTree(data1, data2) {
         return { ...value, nested: entry.nested };
       }
       if (entry.nested) {
-        const value = iter(
-          entry.value,
-          tree2[_.findIndex(tree2, (el) => el.key === entry.key)].value
-        );
-        return { value, nested: entry.nested };
+        const comparedEntryFromFile2 =
+          tree2[_.findIndex(tree2, (el) => el.key === entry.key)];
+
+        if (comparedEntryFromFile2) {
+          const value = iter(entry.value, comparedEntryFromFile2.value);
+          return {
+            key: entry.key,
+            file1: value,
+            file2: comparedEntryFromFile2.value,
+            status: 'changed(iter)',
+            nested: true
+          };
+        }
+        if (!comparedEntryFromFile2) {
+          return {
+            key: entry.key,
+            file1: entry.value,
+            file2: undefined,
+            status: 'not found(iter)',
+            nested: entry.nested
+          };
+        }
       }
     });
-    const newEntries = tree2
+    const newFlatEntries = tree2
       .filter(
         (entry) => _.findIndex(tree1, (el) => el.key === entry.key) === -1
       )
@@ -111,11 +128,12 @@ export function genDiffTree(data1, data2) {
         key: entry.key,
         file1: undefined,
         file2: entry.value,
-        status: 'new'
+        status: 'new (iter)',
+        nested: entry.nested
       }));
     // const newEntries = [];
 
-    return [...comparedFromTree1, ...newEntries];
+    return [...comparedFromTree1, ...newFlatEntries];
   };
 
   return iter(entries1, entries2);
@@ -123,17 +141,18 @@ export function genDiffTree(data1, data2) {
 
 const data1 = {
   hello: 'world',
-  is: true,
+  // is: true,
   nestedProp: { count: 5, units: 'm' },
-  foo: 'bar'
+  nestedDeleted: { kek: 15 }
+  // foo: 'bar'
 };
 
 const data2 = {
   hello: 'World!!!',
-  is: true,
-  nestedProp: { count: 6, units: 'm' },
-  nested2: { kek: 12 },
-  peepo: 'Happy'
+  // is: true,
+  nestedProp: { count: 5, units: 'M (meters)', kee: { poo: 'bee' } },
+  nested2: { kek: 12 }
+  // peepo: 'Happy'
 };
 
 const plain1 = {
@@ -150,6 +169,7 @@ const plain2 = {
   float: 1.25
 };
 
+// console.log(genDiffTree(data1, data2));
 console.log(genDiffTree(data1, data2));
 // console.log(genDiffTree(plain1, plain2));
 
