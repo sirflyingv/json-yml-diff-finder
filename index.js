@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { parseEntries, getEntries } from './src/parsers.js';
+import { parseEntries } from './src/parsers.js';
 
 export function genDiff(filepath1, filepath2) {
   const entries1 = parseEntries(filepath1);
@@ -57,10 +57,8 @@ export function genDiffTree(data1, data2) {
   );
 
   const checkEntry = (entry, data) => {
-    // console.log(entry.key, entry.value);
     const indexOfSameEntry = _.findIndex(data, (el) => el.key === entry.key);
     if (indexOfSameEntry === -1) {
-      // return `not found... ${entry.key}:${entry.value}`;
       return {
         key: entry.key,
         file1: entry.value,
@@ -72,7 +70,6 @@ export function genDiffTree(data1, data2) {
     const comparedEntry = data[indexOfSameEntry];
 
     if (_.isEqual(entry.value, comparedEntry.value)) {
-      // return `not changed | ${entry.key}:${entry.value}`;
       return {
         key: entry.key,
         file1: entry.value,
@@ -80,7 +77,7 @@ export function genDiffTree(data1, data2) {
         status: 'not changed'
       };
     }
-    // return `changed! ${entry.key}:${entry.value} to ${comparedEntry.key}:${comparedEntry.value}`;
+
     return {
       key: entry.key,
       file1: entry.value,
@@ -103,8 +100,7 @@ export function genDiffTree(data1, data2) {
           const value = iter(entry.value, comparedEntryFromFile2.value);
           return {
             key: entry.key,
-            file1: value,
-            file2: comparedEntryFromFile2.value,
+            value,
             status: 'changed(iter)',
             nested: true
           };
@@ -131,7 +127,6 @@ export function genDiffTree(data1, data2) {
         status: 'new (iter)',
         nested: entry.nested
       }));
-    // const newEntries = [];
 
     return [...comparedFromTree1, ...newFlatEntries];
   };
@@ -141,43 +136,18 @@ export function genDiffTree(data1, data2) {
 
 const data1 = {
   hello: 'world',
-  // is: true,
+  is: true,
   nestedProp: { count: 5, units: 'm' },
-  nestedDeleted: { kek: 15 }
-  // foo: 'bar'
+  nestedDeleted: { kek: 15 },
+  foo: 'bar'
 };
 
 const data2 = {
   hello: 'World!!!',
-  // is: true,
+  is: true,
   nestedProp: { count: 5, units: 'M (meters)', kee: { poo: 'bee' } },
-  nested2: { kek: 12 }
-  // peepo: 'Happy'
+  nested2: { kek: 12 },
+  peepo: 'Happy'
 };
 
-const plain1 = {
-  string: 'value',
-  boolean: true,
-  number: 5,
-  float: 1.5
-};
-
-const plain2 = {
-  string: 'value',
-  boolean: true,
-  peepo: 'happy',
-  float: 1.25
-};
-
-// console.log(genDiffTree(data1, data2));
 console.log(genDiffTree(data1, data2));
-// console.log(genDiffTree(plain1, plain2));
-
-// const isFlat = (obj) => {
-//   const values = Object.values(obj);
-//   return values.every(
-//     (val) => typeof val !== 'object' || val === null || Array.isArray(val)
-//   );
-// };
-
-// console.log(isFlat(plain1) && isFlat(plain2));
