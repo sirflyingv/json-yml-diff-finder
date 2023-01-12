@@ -1,33 +1,34 @@
 import _ from 'lodash';
-import { parseEntries } from './src/parsers.js';
+// import { parseEntries } from './src/parsers.js';
+import stringify from './src/stringify.js';
 
-export function genDiff(filepath1, filepath2) {
-  const entries1 = parseEntries(filepath1);
-  const entries2 = parseEntries(filepath2);
+// export function genDiff(filepath1, filepath2) {
+//   const entries1 = parseEntries(filepath1);
+//   const entries2 = parseEntries(filepath2);
 
-  const addMarkProp = (obj, mark) => ({ ...obj, mark });
+//   const addMarkProp = (obj, mark) => ({ ...obj, mark });
 
-  const differedEntries = _.differenceWith(entries1, entries2, _.isEqual).map(
-    (entry) => addMarkProp(entry, '-')
-  );
-  const newEntries = _.differenceWith(entries2, entries1, _.isEqual).map(
-    (entry) => addMarkProp(entry, '+')
-  );
-  const unchangedEntries = _.intersectionWith(
-    entries1,
-    entries2,
-    _.isEqual
-  ).map((entry) => addMarkProp(entry, ' '));
+//   const differedEntries = _.differenceWith(entries1, entries2, _.isEqual).map(
+//     (entry) => addMarkProp(entry, '-')
+//   );
+//   const newEntries = _.differenceWith(entries2, entries1, _.isEqual).map(
+//     (entry) => addMarkProp(entry, '+')
+//   );
+//   const unchangedEntries = _.intersectionWith(
+//     entries1,
+//     entries2,
+//     _.isEqual
+//   ).map((entry) => addMarkProp(entry, ' '));
 
-  const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
-  const summarySorted = _.orderBy(summary, ['key', 'mark'], ['asc', 'desc']);
+//   const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
+//   const summarySorted = _.orderBy(summary, ['key', 'mark'], ['asc', 'desc']);
 
-  const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
+//   const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
 
-  const output = ['{', ...summarySorted.map(makeDiffLine), '}'].join('\n');
+//   const output = ['{', ...summarySorted.map(makeDiffLine), '}'].join('\n');
 
-  return output;
-}
+//   return output;
+// }
 
 // mark is not good for logical diff coz it's preparation for string output
 // Let's make structure like {key: 'KEY', oldValue: {...}, newValue: {...}}
@@ -48,7 +49,7 @@ const getRecursiveEntries = (obj) => {
 
 const addProp = (obj, propName, propVal) => ({ ...obj, [propName]: propVal });
 
-export function genDiffTree(data1, data2) {
+export default function genDiffData(data1, data2) {
   const entries1 = getRecursiveEntries(data1).map((entry) =>
     addProp(entry, 'file', 1)
   );
@@ -63,7 +64,7 @@ export function genDiffTree(data1, data2) {
         key: entry.key,
         file1: entry.value,
         file2: undefined,
-        status: 'not found'
+        status: 'deleted'
       };
     }
 
@@ -101,7 +102,7 @@ export function genDiffTree(data1, data2) {
           return {
             key: entry.key,
             value,
-            status: 'changed(iter)',
+            status: 'changed',
             nested: true
           };
         }
@@ -110,7 +111,7 @@ export function genDiffTree(data1, data2) {
             key: entry.key,
             file1: entry.value,
             file2: undefined,
-            status: 'not found(iter)',
+            status: 'deleted',
             nested: entry.nested
           };
         }
@@ -124,7 +125,7 @@ export function genDiffTree(data1, data2) {
         key: entry.key,
         file1: undefined,
         file2: entry.value,
-        status: 'new (iter)',
+        status: 'new',
         nested: entry.nested
       }));
 
@@ -137,17 +138,36 @@ export function genDiffTree(data1, data2) {
 const data1 = {
   hello: 'world',
   is: true,
-  nestedProp: { count: 5, units: 'm' },
-  nestedDeleted: { kek: 15 },
-  foo: 'bar'
+  nestedProp: { count: 5, units: 'm', verified: true },
+  nestedDeleted: { ppp: 'lll' }
 };
 
 const data2 = {
   hello: 'World!!!',
   is: true,
-  nestedProp: { count: 5, units: 'M (meters)', kee: { poo: 'bee' } },
-  nested2: { kek: 12 },
-  peepo: 'Happy'
+  nestedProp: { count: 5, units: 'M (meters)' }
 };
 
-console.log(genDiffTree(data1, data2));
+console.log(genDiffData(data1, data2));
+
+const somePrint = (diff) => {
+  const result = diff.map((el) => {
+    // not changed
+
+    // changed !nested
+
+    // changed nested
+
+    //  deleted !nested
+
+    // deleted nested
+
+    // new
+    if (el.nested === true) return `${el.key}: ${somePrint(el.value)}`;
+    return `key: ${el.key}, status: ${el.status},value:  ${el.file1} ->  ${el.file2}`;
+  });
+  return result.join('\n');
+};
+
+// const test = somePrint(genDiffData(data1, data2));
+// console.log(test);
