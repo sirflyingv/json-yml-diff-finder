@@ -139,35 +139,58 @@ const data1 = {
   hello: 'world',
   is: true,
   nestedProp: { count: 5, units: 'm', verified: true },
-  nestedDeleted: { ppp: 'lll' }
+  nestedDeleted: { ppp: { lll: 'ddd' } }
 };
 
 const data2 = {
   hello: 'World!!!',
   is: true,
-  nestedProp: { count: 5, units: 'M (meters)' }
+  nestedProp: { count: 5, units: 'M (meters)' },
+  peepo: 'happy'
 };
 
-console.log(genDiffData(data1, data2));
+console.log(genDiffData(data1, data2).at(-2).file1[0]);
 
-const somePrint = (diff) => {
+const formatStylish = (diff) => {
   const result = diff.map((el) => {
     // not changed
-
+    if (el.status === 'not changed' && el.nested === false) {
+      return `  ${el.key}: ${el.file1}`;
+    }
     // changed !nested
+    if (el.status === 'changed' && el.nested === false) {
+      return `- ${el.key}: ${el.file1} \n+ ${el.key}: ${el.file2}`;
+    }
 
     // changed nested
+    if (el.status === 'changed' && el.nested === true) {
+      return `${el.key}: \n${formatStylish(el.value)}`;
+    }
 
     //  deleted !nested
+    if (el.status === 'deleted' && el.nested === false) {
+      return `- ${el.key}: ${el.file1}`;
+    }
 
-    // deleted nested
+    //  deleted nested
+    if (el.status === 'deleted' && el.nested === true) {
+      return `- ${el.key}: \n ${formatStylish(el.file1)}`; // cringe
+    }
 
     // new
-    if (el.nested === true) return `${el.key}: ${somePrint(el.value)}`;
-    return `key: ${el.key}, status: ${el.status},value:  ${el.file1} ->  ${el.file2}`;
+    if (el.status === 'new' && el.nested === false) {
+      return `+ ${el.key}: ${el.file2}`;
+    }
+
+    // unchanged
+    if (el.status === undefined && el.nested === false) {
+      return ` ${el.key}: ${el.value}`;
+    }
+
+    return ` ${el.key}: \n ${formatStylish(el.value)}`;
   });
   return result.join('\n');
 };
 
-// const test = somePrint(genDiffData(data1, data2));
-// console.log(test);
+const test = formatStylish(genDiffData(data1, data2));
+console.log(test);
