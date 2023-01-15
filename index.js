@@ -57,11 +57,57 @@ export default function genDiffData(filepath1, filepath2) {
     addPropRecursive(entry, 'file', 2)
   );
 
-  // console.log(JSON.stringify(entries2[0], ' ', 1));
-  console.log(entries1[0]);
+  // console.log(entries1[2]);
 
   const iter = (data1, data2) => {
-    const result = data1.map((entry) => {});
+    const result = data1.map((entry) => {
+      const indexOfSameEntry = _.findIndex(data2, (el) => el.key === entry.key);
+
+      if (indexOfSameEntry === -1) {
+        return {
+          key: entry.key,
+          file1: entry.value,
+          file2: undefined,
+          status: 'deleted', // should I mark it recursively?
+          nested: entry.nested
+        };
+      }
+      const comparedEntry = data2[indexOfSameEntry];
+
+      if (_.isEqual(entry.value, comparedEntry.value)) {
+        return {
+          key: entry.key,
+          file1: entry.value,
+          file2: comparedEntry.value,
+          status: 'not changed', // should I mark it recursively?
+          nested: entry.nested
+        };
+      }
+
+      if (
+        !_.isEqual(entry.value, comparedEntry.value) &&
+        !entry.nested &&
+        !comparedEntry.nested
+      ) {
+        return {
+          key: entry.key,
+          file1: entry.value,
+          file2: comparedEntry.value,
+          status: 'changed',
+          nested: entry.nested
+        };
+      }
+
+      if (entry.nested === true && comparedEntry.nested === true) {
+        return {
+          key: entry.key,
+          value: iter(entry.value, comparedEntry.value),
+          status: 'changed',
+          nested: entry.nested
+        };
+      }
+    });
+    return result;
   };
 
   // const checkFlatEntry = (entry, data) => {
@@ -211,4 +257,10 @@ const test1 = genDiffData(
   './__fixtures__/tree1.json',
   './__fixtures__/tree2.json'
 );
-// console.log(test1);
+
+// const test1 = genDiffData(
+//   './__fixtures__/file1.json',
+//   './__fixtures__/file2.json'
+// );
+
+console.log(test1);
