@@ -98,7 +98,11 @@ export default function genDiffData(filepath1, filepath2) {
         };
       }
 
-      if (entry.nested === true && comparedEntry.nested === true) {
+      if (
+        !_.isEqual(entry.value, comparedEntry.value) &&
+        entry.nested === true &&
+        comparedEntry.nested === true
+      ) {
         return {
           key: entry.key,
           value: iter(entry.value, comparedEntry.value),
@@ -106,8 +110,35 @@ export default function genDiffData(filepath1, filepath2) {
           nested: entry.nested
         };
       }
+
+      if (
+        !_.isEqual(entry.value, comparedEntry.value) &&
+        entry.nested !== comparedEntry.nested
+      ) {
+        return {
+          key: entry.key,
+          file1: entry.value,
+          file2: comparedEntry.value,
+          status: 'changed',
+          nested: entry.nested // IT'S ACTUALLY MORE COMPLICATED
+        };
+      }
     });
-    return result;
+
+    //  find new entries here
+    const newEntries = data2
+      .filter(
+        (entry) => _.findIndex(data1, (el) => el.key === entry.key) === -1
+      )
+      .map((entry) => ({
+        key: entry.key,
+        file1: undefined,
+        file2: entry.value,
+        status: 'new',
+        nested: entry.nested
+      }));
+
+    return [...result, ...newEntries];
   };
 
   // const checkFlatEntry = (entry, data) => {
@@ -263,4 +294,4 @@ const test1 = genDiffData(
 //   './__fixtures__/file2.json'
 // );
 
-console.log(test1);
+console.log(test1[0]);
