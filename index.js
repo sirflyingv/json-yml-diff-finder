@@ -1,6 +1,6 @@
 import _ from 'lodash';
-
-import { getRecursiveEntries, parseEntries, isObject } from './src/parsers.js';
+import { parseEntries } from './src/parsers.js';
+import stringify from './src/stringify.js';
 
 // export function genDiff(filepath1, filepath2) {
 //   const entries1 = parseEntries(filepath1);
@@ -119,7 +119,7 @@ export default function genDiffData(filepath1, filepath2) {
           key: entry.key,
           file1: entry.value,
           file2: comparedEntry.value,
-          status: 'changed',
+          status: 'changed type',
           nested: entry.nested // IT'S ACTUALLY MORE COMPLICATED
         };
       }
@@ -240,53 +240,80 @@ export default function genDiffData(filepath1, filepath2) {
 // console.log(genDiffData(data1, data2).at(-2).file1[0]);
 
 const formatStylish = (diff) => {
-  const result = diff.map((el) => {
-    // not changed
-    if (el.status === 'not changed' && el.nested === false) {
-      return `  ${el.key}: ${el.file1}`;
+  const iter = (data) => {
+    // dead ends
+    if (typeof data === 'string') {
+      return `${data}`;
     }
-    // changed !nested
-    if (el.status === 'changed' && el.nested === false) {
-      return `- ${el.key}: ${el.file1} \n+ ${el.key}: ${el.file2}`;
-    }
-
-    // changed nested
-    if (el.status === 'changed' && el.nested === true) {
-      return `${el.key}: \n${formatStylish(el.value)}`;
+    // dead ends
+    if (!Array.isArray(data) && !data.status) {
+      return `  ${data.key}: ${data.value}`;
     }
 
-    //  deleted !nested
-    if (el.status === 'deleted' && el.nested === false) {
-      return `- ${el.key}: ${el.file1}`;
-    }
+    const result = data.map((el) => {
+      // changed nested
+      if (el.status === 'changed' && el.nested === true) {
+        return `  ${el.key}: ${formatStylish(el.value)}`;
+      }
 
-    //  deleted nested
-    if (el.status === 'deleted' && el.nested === true) {
-      return `- ${el.key}: \n ${formatStylish(el.file1)}`; // cringe
-    }
+      // not changed
+      if (el.status === 'not changed' && el.nested === false) {
+        return `  ${el.key}: ${el.file1}`;
+      }
 
-    // new
-    if (el.status === 'new' && el.nested === false) {
-      return `+ ${el.key}: ${el.file2}`;
-    }
+      // changed !nested
+      if (el.status === 'changed' && el.nested === false) {
+        return `- ${el.key}: ${el.file1} \n+ ${el.key}: ${el.file2}`;
+      }
+      // changed value and type
+      if (el.status === 'changed type') {
+        return `- ${el.key}: ${formatStylish(el.file1)} \n+ ${
+          el.key
+        }: ${formatStylish(el.file2)}`;
+      }
 
-    // not changed inside nested
-    if (el.status === undefined && el.nested === false) {
-      return ` ${el.key}: ${el.value}`;
-    }
+      //  deleted !nested
+      if (el.status === 'deleted' && el.nested === false) {
+        return `- ${el.key}: ${el.file1}`;
+      }
 
-    // for insisde nested unchanged flat stuff
-    return ` ${el.key}: \n ${formatStylish(el.value)}`;
-  });
-  return result.join('\n');
+      //  deleted nested
+      if (el.status === 'deleted' && el.nested === true) {
+        return `- ${el.key}: \n ${formatStylish(el.file1)}`; // cringe
+      }
+      // deep in deleted/new
+      if (!el.status && el.nested === true) {
+        return `  ${el.key}: \n ${formatStylish(el.value)}`; // cringe
+      }
+
+      // new
+      if (el.status === 'new' && el.nested === false) {
+        return `+ ${el.key}: ${el.file2}`;
+      }
+      if (el.status === 'new' && el.nested === true) {
+        return `+ ${el.key}: ${formatStylish(el.file2)}`;
+      }
+
+      // not changed inside nested
+      if (el.status === undefined && el.nested === false) {
+        return ` ${el.key}: ${el.value}`;
+      }
+
+      //   // for insisde nested unchanged flat stuff
+      //   return ` ${el.key}: \n ${formatStylish(el.value)}`;
+      return `${el.key}: ${el.value}`;
+    });
+    return ['{', ...result, '}'].join('\n');
+  };
+  return iter(diff);
 };
 
 // const tree1 = parseEntries('./__fixtures__/tree1.json');
 // const tree2 = parseEntries('./__fixtures__/file2.json');
 
 const test1 = genDiffData(
-  './__fixtures__/tree1.json',
-  './__fixtures__/tree2.json'
+  './__fixtures__/tree1.yml',
+  './__fixtures__/tree2.yml'
 );
 
 // const test1 = genDiffData(
@@ -294,4 +321,5 @@ const test1 = genDiffData(
 //   './__fixtures__/file2.json'
 // );
 
-console.log(test1[0]);
+const outputStylish = formatStylish(test1);
+console.log(outputStylish);
