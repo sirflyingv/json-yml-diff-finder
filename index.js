@@ -1,39 +1,5 @@
 import _ from 'lodash';
 import { parseEntries } from './src/parsers.js';
-import stringify from './src/stringify.js';
-
-// export function genDiff(filepath1, filepath2) {
-//   const entries1 = parseEntries(filepath1);
-//   const entries2 = parseEntries(filepath2);
-
-//   const addMarkProp = (obj, mark) => ({ ...obj, mark });
-
-//   const differedEntries = _.differenceWith(entries1, entries2, _.isEqual).map(
-//     (entry) => addMarkProp(entry, '-')
-//   );
-//   const newEntries = _.differenceWith(entries2, entries1, _.isEqual).map(
-//     (entry) => addMarkProp(entry, '+')
-//   );
-//   const unchangedEntries = _.intersectionWith(
-//     entries1,
-//     entries2,
-//     _.isEqual
-//   ).map((entry) => addMarkProp(entry, ' '));
-
-//   const summary = [...differedEntries, ...newEntries, ...unchangedEntries];
-//   const summarySorted = _.orderBy(summary, ['key', 'mark'], ['asc', 'desc']);
-
-//   const makeDiffLine = (entry) => `${entry.mark} ${entry.key}: ${entry.value}`;
-
-//   const output = ['{', ...summarySorted.map(makeDiffLine), '}'].join('\n');
-
-//   return output;
-// }
-
-// mark is not good for logical diff coz it's preparation for string output
-// Let's make structure like {key: 'KEY', oldValue: {...}, newValue: {...}}
-
-// const addProp = (obj, propName, propVal) => ({ ...obj, [propName]: propVal });
 
 const addPropRecursive = (obj, propName, propVal) => {
   if (obj.nested === true) {
@@ -56,8 +22,6 @@ export function genDiffData(filepath1, filepath2) {
   const entries2 = parseEntries(filepath2).map((entry) =>
     addPropRecursive(entry, 'file', 2)
   );
-
-  // console.log(entries1[2]);
 
   const iter = (data1, data2) => {
     const result = data1.map((entry) => {
@@ -143,103 +107,8 @@ export function genDiffData(filepath1, filepath2) {
     return fullResult;
   };
 
-  // const checkFlatEntry = (entry, data) => {
-  //   const indexOfSameEntry = _.findIndex(data, (el) => el.key === entry.key);
-  //   if (indexOfSameEntry === -1) {
-  //     return {
-  //       key: entry.key,
-  //       file1: entry.value,
-  //       file2: undefined,
-  //       status: 'deleted'
-  //     };
-  //   }
-
-  //   const comparedEntry = data[indexOfSameEntry];
-
-  //   if (_.isEqual(entry.value, comparedEntry.value)) {
-  //     return {
-  //       key: entry.key,
-  //       file1: entry.value,
-  //       file2: comparedEntry.value,
-  //       status: 'not changed'
-  //     };
-  //   }
-
-  //   return {
-  //     key: entry.key,
-  //     file1: entry.value,
-  //     file2: comparedEntry.value,
-  //     status: 'changed'
-  //   };
-  // };
-
-  // const iter = (tree1, tree2) => {
-  //   const comparedFromTree1 = tree1.map((entry) => {
-  //     if (!entry.nested) {
-  //       const value = checkFlatEntry(entry, tree2);
-  //       return { ...value, nested: entry.nested };
-  //     }
-  //     if (entry.nested) {
-  //       const comparedEntryFromFile2 =
-  //         tree2[_.findIndex(tree2, (el) => el.key === entry.key)];
-
-  //       if (comparedEntryFromFile2) {
-  //         const value = iter(entry.value, comparedEntryFromFile2.value);
-  //         return {
-  //           key: entry.key,
-  //           value,
-  //           status: 'changed',
-  //           nested: true
-  //         };
-  //       }
-
-  //       if (!comparedEntryFromFile2) {
-  //         return {
-  //           key: entry.key,
-  //           file1: entry.value,
-  //           file2: undefined,
-  //           status: 'deleted',
-  //           nested: entry.nested
-  //         };
-  //       }
-  //     }
-  //   });
-  //   // console.log('TREE2', tree2); // IT DOESNT WORK IF PROP HAD NESTED VALUE AND BECAME FLAT
-  //   const newFlatEntries = tree2
-  //     .filter(
-  //       (entry) => _.findIndex(tree1, (el) => el.key === entry.key) === -1
-  //     )
-  //     .map((entry) => ({
-  //       key: entry.key,
-  //       file1: undefined,
-  //       file2: entry.value,
-  //       status: 'new',
-  //       nested: entry.nested
-  //     }));
-
-  //   // console.log('OK');
-
-  //   return [...comparedFromTree1, ...newFlatEntries];
-  // };
-
   return iter(entries1, entries2);
 }
-
-// const data1 = {
-//   hello: 'world',
-//   is: true,
-//   nestedProp: { count: 5, units: 'm', verified: true },
-//   nestedDeleted: { ppp: { lll: 'ddd' } }
-// };
-
-// const data2 = {
-//   hello: 'World!!!',
-//   is: true,
-//   nestedProp: { count: 5, units: 'M (meters)' },
-//   peepo: 'happy'
-// };
-
-// console.log(genDiffData(data1, data2).at(-2).file1[0]);
 
 export const formatStylish = (diff) => {
   const iter = (data, depth) => {
@@ -314,19 +183,3 @@ export const formatStylish = (diff) => {
   };
   return iter(diff, 1);
 };
-
-// const tree1 = parseEntries('./__fixtures__/tree1.json');
-// const tree2 = parseEntries('./__fixtures__/file2.json');
-
-// const test1 = genDiffData(
-//   './__fixtures__/tree1.yml',
-//   './__fixtures__/tree2.yml'
-// );
-
-// const test1 = genDiffData(
-//   './__fixtures__/file1.json',
-//   './__fixtures__/file2.json'
-// );
-
-// const outputStylish = formatStylish(test1);
-// console.log(outputStylish);
