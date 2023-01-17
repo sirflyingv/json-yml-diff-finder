@@ -1,12 +1,15 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable consistent-return */
+/* eslint-disable function-paren-newline */
 import _ from 'lodash';
 import { parseEntries } from './src/parsers.js';
 
-const addPropRecursive = (obj, propName, propVal) => {
+const addPropR = (obj, propName, propVal) => {
   if (obj.nested === true) {
     return {
       ...obj,
       [propName]: propVal,
-      value: obj.value.map((el) => addPropRecursive(el, propName, propVal))
+      value: obj.value.map((el) => addPropR(el, propName, propVal))
     };
   }
   return {
@@ -17,10 +20,10 @@ const addPropRecursive = (obj, propName, propVal) => {
 
 export function genDiffData(filepath1, filepath2) {
   const entries1 = parseEntries(filepath1).map((entry) =>
-    addPropRecursive(entry, 'file', 1)
+    addPropR(entry, 'file', 1)
   );
   const entries2 = parseEntries(filepath2).map((entry) =>
-    addPropRecursive(entry, 'file', 2)
+    addPropR(entry, 'file', 2)
   );
 
   const iter = (data1, data2) => {
