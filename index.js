@@ -138,7 +138,9 @@ export default function genDiffData(filepath1, filepath2) {
         nested: entry.nested
       }));
 
-    return [...result, ...newEntries];
+    const fullResult = _.orderBy([...result, ...newEntries], ['key']);
+
+    return fullResult;
   };
 
   // const checkFlatEntry = (entry, data) => {
