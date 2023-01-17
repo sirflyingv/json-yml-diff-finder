@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import genDiffData from '../index.js';
-import formatStylish from '../src/formatStylish.js';
+import { printStylish } from '../src/formatStylish.js';
 
 const programGendiff = new Command();
 
@@ -15,8 +15,7 @@ programGendiff
   .option('-f, --format <type>', 'output format')
   .action((filepath1, filepath2, opts) => {
     const diff = genDiffData(filepath1, filepath2);
-    formatStylish(diff);
-    console.log(opts.format);
+    printStylish(diff);
   });
 
 programGendiff.parse();

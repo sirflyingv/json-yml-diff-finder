@@ -1,4 +1,4 @@
-const formatStylish = (diff) => {
+export const formatStylish = (diff) => {
   const iter = (data, depth) => {
     const indentSize = depth * 2;
     const currentIndent = ' '.repeat(indentSize);
@@ -72,4 +72,4 @@ const formatStylish = (diff) => {
   return iter(diff, 1);
 };
 
-export default (diff) => console.log(formatStylish(diff));
+export const printStylish = (diff) => console.log(formatStylish(diff));
