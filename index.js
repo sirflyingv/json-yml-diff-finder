@@ -242,72 +242,83 @@ export default function genDiffData(filepath1, filepath2) {
 // console.log(genDiffData(data1, data2).at(-2).file1[0]);
 
 const formatStylish = (diff) => {
-  const iter = (data) => {
+  const iter = (data, depth) => {
+    const indentSize = depth * 1;
+    const currentIndent = '    '.repeat(indentSize);
+    const bracketIndent = '    '.repeat(indentSize - 1);
+
     // dead ends
     if (typeof data === 'string') {
       return `${data}`;
     }
     // dead ends
     if (!Array.isArray(data) && !data.status) {
-      return `  ${data.key}: ${data.value}`;
+      return `${currentIndent}  ${data.key}: ${data.value}`;
     }
 
     const result = data.map((el) => {
       // changed nested
       if (el.status === 'changed' && el.nested === true) {
-        return `  ${el.key}: ${formatStylish(el.value)}`;
+        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + 1)}`;
       }
 
       // not changed
       if (el.status === 'not changed' && el.nested === false) {
-        return `  ${el.key}: ${el.file1}`;
+        return `${currentIndent}  ${el.key}: ${el.file1}`;
       }
 
       // changed !nested
       if (el.status === 'changed' && el.nested === false) {
-        return `- ${el.key}: ${el.file1} \n+ ${el.key}: ${el.file2}`;
+        return `${currentIndent}- ${el.key}: ${el.file1} \n${currentIndent}+ ${el.key}: ${el.file2}`;
       }
       // changed value and type
       if (el.status === 'changed type') {
-        return `- ${el.key}: ${formatStylish(el.file1)} \n+ ${
-          el.key
-        }: ${formatStylish(el.file2)}`;
+        return `${currentIndent}- ${el.key}: ${iter(
+          el.file1,
+          depth + 1
+        )} \n${currentIndent}+ ${el.key}: ${iter(el.file2, depth + 1)}`;
       }
 
       //  deleted !nested
       if (el.status === 'deleted' && el.nested === false) {
-        return `- ${el.key}: ${el.file1}`;
+        return `${currentIndent}- ${el.key}: ${el.file1}`;
       }
 
       //  deleted nested
       if (el.status === 'deleted' && el.nested === true) {
-        return `- ${el.key}: \n ${formatStylish(el.file1)}`; // cringe
+        return `${currentIndent}- ${el.key}:\n${currentIndent}  ${iter(
+          el.file1,
+          depth + 1
+        )}`;
       }
       // deep in deleted/new
       if (!el.status && el.nested === true) {
-        return `  ${el.key}: \n ${formatStylish(el.value)}`; // cringe
+        return `${currentIndent}  ${el.key}: \n${currentIndent}  ${iter(
+          el.value,
+          depth + 1
+        )}`;
       }
 
       // new
       if (el.status === 'new' && el.nested === false) {
-        return `+ ${el.key}: ${el.file2}`;
+        return `${currentIndent}+ ${el.key}: ${el.file2}`;
       }
       if (el.status === 'new' && el.nested === true) {
-        return `+ ${el.key}: ${formatStylish(el.file2)}`;
+        return `${currentIndent}+ ${el.key}:${iter(el.file2, depth + 1)}`;
       }
 
       // not changed inside nested
       if (el.status === undefined && el.nested === false) {
-        return ` ${el.key}: ${el.value}`;
+        return `${currentIndent}  ${el.key}: ${el.value}`;
       }
 
       //   // for insisde nested unchanged flat stuff
       //   return ` ${el.key}: \n ${formatStylish(el.value)}`;
-      return `${el.key}: ${el.value}`;
+      return `${currentIndent}  ${el.key}: ${el.value}`;
     });
-    return ['{', ...result, '}'].join('\n');
+    return ['{', ...result, `${bracketIndent}  }`].join('\n');
   };
-  return iter(diff);
+  return iter(diff, 1);
 };
 
 // const tree1 = parseEntries('./__fixtures__/tree1.json');
