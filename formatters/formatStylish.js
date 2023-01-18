@@ -33,7 +33,6 @@ const formatStylish = (diff) => {
       }
       // changed value and type
       if (el.status === 'changed type') {
-        console.log(el.file1);
         return `${currentIndent}- ${el.key}: ${iter(
           el.file1,
           depth + 2
