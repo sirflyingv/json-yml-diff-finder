@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export const formatPlain = (diff) => {
+const formatPlain = (diff) => {
   const iter = (data, path = '') => {
     const result = data.map((el) => {
       if (el.status === 'changed' && el.nested) {
@@ -41,4 +41,4 @@ export const formatPlain = (diff) => {
   return iter(diff);
 };
 
-export const printPlain = (diff) => console.log(formatPlain(diff));
+export default formatPlain;
