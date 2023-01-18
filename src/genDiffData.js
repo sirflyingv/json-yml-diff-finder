@@ -57,11 +57,11 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-
+      // prettier-ignore
       if (
-        !_.isEqual(entry.value, newEntry.value) &&
-        entry.nested &&
-        newEntry.nested
+        !_.isEqual(entry.value, newEntry.value)
+        && entry.nested
+        && newEntry.nested
       ) {
         return {
           key: entry.key,
