@@ -9,4 +9,4 @@ Diff of 2 JSON files [asciinema](https://asciinema.org/a/xCQkcJKTUzYjQXw7hHAxkCU
 
 Diff of 2 YAML files [asciinema](https://asciinema.org/a/0JILr63wJB7tvhH8RverpSFC2)
 
-Stylish print of 2 tree files [asciinema](https://asciinema.org/a/6w66dlNKUMzIJnvFujRJdTghJ)
+Stylish print of 2 tree files diff [asciinema](https://asciinema.org/a/6w66dlNKUMzIJnvFujRJdTghJ)

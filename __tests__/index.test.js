@@ -16,7 +16,7 @@ const getFixturePath = (filename) =>
 const readFile = (filename) =>
   fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-test('gendiff', () => {
+test('gendiff stylish', () => {
   const filepath1 = getFixturePath('tree1.yml');
   const filepath2 = getFixturePath('tree2.json');
 
