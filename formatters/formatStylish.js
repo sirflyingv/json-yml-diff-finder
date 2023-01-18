@@ -35,7 +35,7 @@ const formatStylish = (diff) => {
       if (el.status === 'changed type') {
         return `${currentIndent}- ${el.key}: ${iter(
           el.file1,
-          depth + 2
+          depth + 2,
         )}\n${currentIndent}+ ${el.key}: ${iter(el.file2, depth + 2)}`;
       }
 

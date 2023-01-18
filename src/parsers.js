@@ -7,8 +7,9 @@ const normalizePath = (inputPath) => path.resolve(process.cwd(), inputPath);
 
 const getExtension = (filename) => filename.split('.').at(-1);
 
-export const isObject = (value) =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+export function isObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
 export const getFormat = (filename) => {
   if (getExtension(filename).toLowerCase() === 'json') return 'JSON';
@@ -28,7 +29,7 @@ export const getRecursiveEntries = (obj) => {
     return {
       key: pair[0],
       value: getRecursiveEntries(pair[1]),
-      nested: true
+      nested: true,
     };
   });
   return entries;

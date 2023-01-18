@@ -1,6 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable consistent-return */
-/* eslint-disable function-paren-newline */
 import _ from 'lodash';
 import { parseEntries } from './parsers.js';
 
@@ -9,22 +6,18 @@ const addPropR = (obj, propName, propVal) => {
     return {
       ...obj,
       [propName]: propVal,
-      value: obj.value.map((el) => addPropR(el, propName, propVal))
+      value: obj.value.map((el) => addPropR(el, propName, propVal)),
     };
   }
   return {
     ...obj,
-    [propName]: propVal
+    [propName]: propVal,
   };
 };
 
 export default (filepath1, filepath2) => {
-  const entries1 = parseEntries(filepath1).map((entry) =>
-    addPropR(entry, 'file', 1)
-  );
-  const entries2 = parseEntries(filepath2).map((entry) =>
-    addPropR(entry, 'file', 2)
-  );
+  const entries1 = parseEntries(filepath1).map((el) => addPropR(el, 'file', 1));
+  const entries2 = parseEntries(filepath2).map((el) => addPropR(el, 'file', 2));
 
   const iter = (data1, data2) => {
     const result = data1.map((entry) => {
@@ -36,7 +29,7 @@ export default (filepath1, filepath2) => {
           file1: entry.value,
           file2: undefined,
           status: 'deleted',
-          nested: entry.nested
+          nested: entry.nested,
         };
       }
       const comparedEntry = data2[indexOfSameEntry];
@@ -47,7 +40,7 @@ export default (filepath1, filepath2) => {
           file1: entry.value,
           file2: comparedEntry.value,
           status: 'not changed',
-          nested: entry.nested
+          nested: entry.nested,
         };
       }
 
@@ -61,7 +54,7 @@ export default (filepath1, filepath2) => {
           file1: entry.value,
           file2: comparedEntry.value,
           status: 'changed',
-          nested: entry.nested
+          nested: entry.nested,
         };
       }
 
@@ -74,7 +67,7 @@ export default (filepath1, filepath2) => {
           key: entry.key,
           value: iter(entry.value, comparedEntry.value),
           status: 'changed',
-          nested: entry.nested
+          nested: entry.nested,
         };
       }
 
@@ -87,7 +80,7 @@ export default (filepath1, filepath2) => {
           file1: entry.value,
           file2: comparedEntry.value,
           status: 'changed type',
-          nested: entry.nested // IT'S ACTUALLY MORE COMPLICATED
+          nested: entry.nested, // IT'S ACTUALLY MORE COMPLICATED
         };
       }
     });
@@ -95,14 +88,14 @@ export default (filepath1, filepath2) => {
     //  find new entries here
     const newEntries = data2
       .filter(
-        (entry) => _.findIndex(data1, (el) => el.key === entry.key) === -1
+        (entry) => _.findIndex(data1, (el) => el.key === entry.key) === -1,
       )
       .map((entry) => ({
         key: entry.key,
         file1: undefined,
         file2: entry.value,
         status: 'new',
-        nested: entry.nested
+        nested: entry.nested,
       }));
 
     const fullResult = _.orderBy([...result, ...newEntries], ['key']);
