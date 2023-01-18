@@ -35,7 +35,7 @@ export default (filepath1, filepath2) => {
           key: entry.key,
           file1: entry.value,
           file2: undefined,
-          status: 'deleted', // should I mark it recursively?
+          status: 'deleted',
           nested: entry.nested
         };
       }
@@ -46,7 +46,7 @@ export default (filepath1, filepath2) => {
           key: entry.key,
           file1: entry.value,
           file2: comparedEntry.value,
-          status: 'not changed', // should I mark it recursively?
+          status: 'not changed',
           nested: entry.nested
         };
       }

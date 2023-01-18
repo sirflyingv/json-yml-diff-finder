@@ -32,6 +32,7 @@ test('gendiff plain', () => {
   const filepath2 = getFixturePath('tree2.json');
 
   const diffData = genDiffData(filepath1, filepath2);
+  console.log(diffData[0].value[0]);
   const result = formatPlain(diffData);
   const expectedResult = readFile('expectedPlain.txt');
   expect(result).toEqual(expectedResult);
