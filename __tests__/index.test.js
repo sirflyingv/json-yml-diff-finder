@@ -6,6 +6,7 @@ import path, { dirname } from 'path';
 import { test, expect } from '@jest/globals';
 import genDiffData from '../index.js';
 import { formatStylish } from '../src/formatStylish.js';
+import { formatPlain } from '../src/formatPlain.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,6 +23,16 @@ test('gendiff stylish', () => {
 
   const diffData = genDiffData(filepath1, filepath2);
   const result = formatStylish(diffData);
-  const expectedResult = readFile('expectedTree.txt');
+  const expectedResult = readFile('expectedStylish.txt');
+  expect(result).toEqual(expectedResult);
+});
+
+test('gendiff plain', () => {
+  const filepath1 = getFixturePath('tree1.yml');
+  const filepath2 = getFixturePath('tree2.json');
+
+  const diffData = genDiffData(filepath1, filepath2);
+  const result = formatPlain(diffData);
+  const expectedResult = readFile('expectedPlain.txt');
   expect(result).toEqual(expectedResult);
 });

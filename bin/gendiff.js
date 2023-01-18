@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import genDiffData from '../index.js';
 import { printStylish } from '../src/formatStylish.js';
+import { printPlain } from '../src/formatPlain.js';
 
 const programGendiff = new Command();
 
@@ -15,7 +16,14 @@ programGendiff
   .option('-f, --format <format>', 'output format')
   .action((filepath1, filepath2, { format = 'stylish' }) => {
     const diff = genDiffData(filepath1, filepath2);
-    if (format === 'stylish') printStylish(diff);
+
+    if (format === 'stylish') {
+      printStylish(diff);
+    } else if (format === 'plain') {
+      printPlain(diff);
+    } else {
+      console.log('wrong syntax, type "gendiff -h" for help');
+    }
   });
 
 programGendiff.parse();
