@@ -12,3 +12,5 @@ Diff of 2 YAML files [asciinema](https://asciinema.org/a/0JILr63wJB7tvhH8RverpSF
 Stylish print of 2 tree files diff [asciinema](https://asciinema.org/a/6w66dlNKUMzIJnvFujRJdTghJ)
 
 Both 'stylish' and 'plain' types of output [asciinema](https://asciinema.org/a/Imgcsr85kjQZEjnZbgdyNshk7)
+
+JSON output [asciinema](https://asciinema.org/a/GRxSWMIaoJSdqN7vH4BLztKEJ)
