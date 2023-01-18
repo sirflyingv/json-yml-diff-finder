@@ -57,11 +57,11 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      // prettier-ignore
+
       if (
-        !_.isEqual(entry.value, newEntry.value)
-        && entry.nested === true
-        && newEntry.nested === true
+        !_.isEqual(entry.value, newEntry.value) &&
+        entry.nested &&
+        newEntry.nested
       ) {
         return {
           key: entry.key,
@@ -83,6 +83,7 @@ export default (filepath1, filepath2) => {
           nested: entry.nested, // IT'S ACTUALLY MORE COMPLICATED
         };
       }
+      return { status: 'wrong data' }; // crutch? to fix consictent return linting error
     });
 
     //  find new entries here
