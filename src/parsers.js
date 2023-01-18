@@ -35,11 +35,13 @@ export const getRecursiveEntries = (obj) => {
   return entries;
 };
 
-const parseJSONFile = (filePath) =>
-  JSON.parse(fs.readFileSync(normalizePath(filePath)));
+function parseJSONFile(filePath) {
+  return JSON.parse(fs.readFileSync(normalizePath(filePath)));
+}
 
-const parseYAMLFile = (filePath) =>
-  yaml.load(fs.readFileSync(normalizePath(filePath)));
+function parseYAMLFile(filePath) {
+  return yaml.load(fs.readFileSync(normalizePath(filePath)));
+}
 
 export const parseEntries = (filepath) => {
   const format = getFormat(filepath);
