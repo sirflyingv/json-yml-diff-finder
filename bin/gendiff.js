@@ -12,10 +12,10 @@ programGendiff
   .version('0.5.0')
   .argument('<filepath1>', 'path to first file')
   .argument('<filepath2>', 'path to second file')
-  .option('-f, --format <type>', 'output format')
-  .action((filepath1, filepath2, opts) => {
+  .option('-f, --format <format>', 'output format')
+  .action((filepath1, filepath2, { format = 'stylish' }) => {
     const diff = genDiffData(filepath1, filepath2);
-    printStylish(diff);
+    if (format === 'stylish') printStylish(diff);
   });
 
 programGendiff.parse();
