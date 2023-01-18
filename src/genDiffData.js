@@ -32,53 +32,53 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      const comparedEntry = data2[indexOfSameEntry];
+      const newEntry = data2[indexOfSameEntry];
 
-      if (_.isEqual(entry.value, comparedEntry.value)) {
+      if (_.isEqual(entry.value, newEntry.value)) {
         return {
           key: entry.key,
           file1: entry.value,
-          file2: comparedEntry.value,
+          file2: newEntry.value,
           status: 'not changed',
           nested: entry.nested,
         };
       }
-
+      // prettier-ignore
       if (
-        !_.isEqual(entry.value, comparedEntry.value) &&
-        !entry.nested &&
-        !comparedEntry.nested
+        !_.isEqual(entry.value, newEntry.value)
+        && !entry.nested
+        && !newEntry.nested
       ) {
         return {
           key: entry.key,
           file1: entry.value,
-          file2: comparedEntry.value,
+          file2: newEntry.value,
           status: 'changed',
           nested: entry.nested,
         };
       }
 
       if (
-        !_.isEqual(entry.value, comparedEntry.value) &&
+        !_.isEqual(entry.value, newEntry.value) &&
         entry.nested === true &&
-        comparedEntry.nested === true
+        newEntry.nested === true
       ) {
         return {
           key: entry.key,
-          value: iter(entry.value, comparedEntry.value),
+          value: iter(entry.value, newEntry.value),
           status: 'changed',
           nested: entry.nested,
         };
       }
 
       if (
-        !_.isEqual(entry.value, comparedEntry.value) &&
-        entry.nested !== comparedEntry.nested
+        !_.isEqual(entry.value, newEntry.value) &&
+        entry.nested !== newEntry.nested
       ) {
         return {
           key: entry.key,
           file1: entry.value,
-          file2: comparedEntry.value,
+          file2: newEntry.value,
           status: 'changed type',
           nested: entry.nested, // IT'S ACTUALLY MORE COMPLICATED
         };
