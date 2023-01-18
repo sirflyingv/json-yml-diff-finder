@@ -44,3 +44,13 @@ test('gendiff json', () => {
 
   expect(diff).toEqual(expectedResult);
 });
+
+test('gendiff ALTER', () => {
+  const filepath1 = getFixturePath('tree1alt.json');
+  const filepath2 = getFixturePath('tree2alt.json');
+
+  const diff = genDiff(filepath1, filepath2, 'stylish');
+  const expectedResult = readFile('expectedStylishalt.txt');
+
+  expect(diff).toEqual(expectedResult);
+});
