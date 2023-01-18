@@ -2,8 +2,8 @@
 
 import { Command } from 'commander';
 import genDiffData from '../index.js';
-import { printStylish } from '../src/formatStylish.js';
-import { printPlain } from '../src/formatPlain.js';
+import { printStylish } from '../formatters/formatStylish.js';
+import { printPlain } from '../formatters/formatPlain.js';
 
 const programGendiff = new Command();
 

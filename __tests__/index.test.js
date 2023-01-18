@@ -5,8 +5,8 @@ import path, { dirname } from 'path';
 
 import { test, expect } from '@jest/globals';
 import genDiffData from '../index.js';
-import { formatStylish } from '../src/formatStylish.js';
-import { formatPlain } from '../src/formatPlain.js';
+import { formatStylish } from '../formatters/formatStylish.js';
+import { formatPlain } from '../formatters/formatPlain.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
