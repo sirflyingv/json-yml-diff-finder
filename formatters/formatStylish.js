@@ -23,7 +23,7 @@ const formatStylish = (diff) => {
       }
 
       if (el.status === 'changed' && el.nested) {
-        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + depthCoeff)}`;
+        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
       }
 
       if (el.status === 'changed' && !el.nested) {
