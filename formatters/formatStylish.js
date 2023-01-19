@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 // config
 const spaceStep = 2;
-const depthCoeff = 2; // but why it's 2???
+const depthCoeff = 2; // but why it's 2??? Something wrong
 const replacer = ' ';
 
 const formatStylish = (diff) => {
