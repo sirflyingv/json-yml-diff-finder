@@ -1,25 +1,29 @@
 import _ from 'lodash';
 
+// config
+const spaceStep = 2;
+const depthCoeff = 2; // but why it's 2???
+const replacer = ' ';
+
 const formatStylish = (diff) => {
   const iter = (data, depth) => {
-    const indentSize = depth * 2;
-    const currentIndent = ' '.repeat(indentSize);
-    const bracketIndent = ' '.repeat(indentSize - 2);
-
+    const indentSize = depth * spaceStep;
+    const currentIndent = replacer.repeat(indentSize);
+    const bracketIndent = replacer.repeat(indentSize - spaceStep);
     // final dead end
     if (!_.isObject(data)) {
       return `${data}`;
     }
 
     const result = data.map((el) => {
-      const addDepth = el.nested ? 2 : 0;
+      const addDepth = el.nested ? depthCoeff : 0;
 
       if (el.status === 'not changed' && !el.nested) {
         return `${currentIndent}  ${el.key}: ${el.file1}`;
       }
 
       if (el.status === 'changed' && el.nested) {
-        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + 2)}`;
+        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + depthCoeff)}`;
       }
 
       if (el.status === 'changed' && !el.nested) {
@@ -30,7 +34,7 @@ const formatStylish = (diff) => {
         return `${currentIndent}- ${el.key}: ${iter(
           el.file1,
           depth + 2,
-        )}\n${currentIndent}+ ${el.key}: ${iter(el.file2, depth + 2)}`;
+        )}\n${currentIndent}+ ${el.key}: ${iter(el.file2, depth + depthCoeff)}`;
       }
 
       if (el.status === 'deleted') {
