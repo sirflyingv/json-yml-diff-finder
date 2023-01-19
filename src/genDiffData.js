@@ -83,7 +83,7 @@ export default (filepath1, filepath2) => {
           nested: entry.nested, // IT'S ACTUALLY MORE COMPLICATED
         };
       }
-      return { status: 'wrong data' }; // crutch? to fix consictent return linting error
+      return { key: entry.key, status: 'wrong data' }; // crutch? to fix consistent-return linting error
     });
 
     //  find new entries here

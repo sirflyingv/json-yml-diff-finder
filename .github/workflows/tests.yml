@@ -1,5 +1,5 @@
 name: tests
-run-name: gendiff test workflow
+run-name: auto check
 on: [push]
 jobs:
   test-and-lint:
