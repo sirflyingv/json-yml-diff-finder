@@ -3,16 +3,10 @@ import { parseEntries } from './parsers.js';
 
 const addPropR = (obj, propName, propVal) => {
   if (obj.nested === true) {
-    return {
-      ...obj,
-      [propName]: propVal,
-      value: obj.value.map((el) => addPropR(el, propName, propVal)),
-    };
+    const value = obj.value.map((el) => addPropR(el, propName, propVal));
+    return { ...obj, [propName]: propVal, value };
   }
-  return {
-    ...obj,
-    [propName]: propVal,
-  };
+  return { ...obj, [propName]: propVal };
 };
 
 export default (filepath1, filepath2) => {
@@ -32,9 +26,11 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      const newEntry = data2[indexOfSameEntry];
 
-      if (_.isEqual(entry.value, newEntry.value)) {
+      const newEntry = data2[indexOfSameEntry];
+      const valuesAreEqual = _.isEqual(entry.value, newEntry.value);
+
+      if (valuesAreEqual) {
         return {
           key: entry.key,
           file1: entry.value,
@@ -43,12 +39,8 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      // prettier-ignore
-      if (
-        !_.isEqual(entry.value, newEntry.value)
-        && !entry.nested
-        && !newEntry.nested
-      ) {
+
+      if (!valuesAreEqual && !entry.nested && !newEntry.nested) {
         return {
           key: entry.key,
           file1: entry.value,
@@ -57,12 +49,8 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      // prettier-ignore
-      if (
-        !_.isEqual(entry.value, newEntry.value)
-        && entry.nested
-        && newEntry.nested
-      ) {
+
+      if (!valuesAreEqual && entry.nested && newEntry.nested) {
         return {
           key: entry.key,
           value: iter(entry.value, newEntry.value),
@@ -70,11 +58,8 @@ export default (filepath1, filepath2) => {
           nested: entry.nested,
         };
       }
-      // prettier-ignore
-      if (
-        !_.isEqual(entry.value, newEntry.value)
-        && entry.nested !== newEntry.nested
-      ) {
+
+      if (!valuesAreEqual && entry.nested !== newEntry.nested) {
         return {
           key: entry.key,
           file1: entry.value,
@@ -83,14 +68,12 @@ export default (filepath1, filepath2) => {
           nested: entry.nested, // IT'S ACTUALLY MORE COMPLICATED
         };
       }
-      return { key: entry.key, status: 'wrong data' }; // crutch? to fix consistent-return linting error
+      return { key: entry.key, status: 'invalid data' }; // crutch to fix consistent-return linting error
     });
 
     //  find new entries here
     const newEntries = data2
-      .filter(
-        (entry) => _.findIndex(data1, (el) => el.key === entry.key) === -1,
-      )
+      .filter((entry) => _.findIndex(data1, (el) => el.key === entry.key) === -1)
       .map((entry) => ({
         key: entry.key,
         file1: undefined,

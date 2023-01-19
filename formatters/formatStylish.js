@@ -12,6 +12,8 @@ const formatStylish = (diff) => {
     }
 
     const result = data.map((el) => {
+      const addDepth = el.nested ? 2 : 0;
+
       if (el.status === 'not changed' && !el.nested) {
         return `${currentIndent}  ${el.key}: ${el.file1}`;
       }
@@ -32,17 +34,14 @@ const formatStylish = (diff) => {
       }
 
       if (el.status === 'deleted') {
-        const addDepth = el.nested ? 2 : 0;
         return `${currentIndent}- ${el.key}: ${iter(el.file1, depth + addDepth)}`;
       }
 
       if (el.status === 'new') {
-        const addDepth = el.nested ? 2 : 0;
         return `${currentIndent}+ ${el.key}: ${iter(el.file2, depth + addDepth)}`;
       }
 
       // deep in deleted/new
-      const addDepth = el.nested ? 2 : 0;
       return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
     });
     return ['{', ...result, `${bracketIndent}}`].join('\n');
