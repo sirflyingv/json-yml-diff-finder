@@ -6,5 +6,6 @@ export const addPropR = (obj, propName, propVal) => {
   return { ...obj, [propName]: propVal };
 };
 
-export const isTrueObj = (value) =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+export function isTrueObj(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
