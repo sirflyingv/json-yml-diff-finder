@@ -1,13 +1,6 @@
 import _ from 'lodash';
 import { parseEntries } from './parsers.js';
-
-const addPropR = (obj, propName, propVal) => {
-  if (obj.nested === true) {
-    const value = obj.value.map((el) => addPropR(el, propName, propVal));
-    return { ...obj, [propName]: propVal, value };
-  }
-  return { ...obj, [propName]: propVal };
-};
+import addPropR from './helpers.js';
 
 export default (filepath1, filepath2) => {
   const entries1 = parseEntries(filepath1).map((el) => addPropR(el, 'file', 1));

@@ -16,37 +16,46 @@ const formatStylish = (diff) => {
     }
 
     const result = data.map((el) => {
-      const addDepth = el.nested ? depthCoeff : 0;
+      const addDepth = el.children ? depthCoeff : 0;
 
-      if (el.status === 'not changed' && !el.nested) {
-        return `${currentIndent}  ${el.key}: ${el.file1}`;
+      if (el.status === 'not changed' && !el.children) {
+        return `${currentIndent}  ${el.key}: ${el.value}`;
       }
 
-      if (el.status === 'changed' && el.nested) {
-        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
+      if (el.status === 'changed' && el.children) {
+        return `${currentIndent}  ${el.key}: ${iter(el.children, depth + addDepth)}`;
       }
 
-      if (el.status === 'changed' && !el.nested) {
-        return `${currentIndent}- ${el.key}: ${el.file1}\n${currentIndent}+ ${el.key}: ${el.file2}`;
+      if (el.status === 'changed' && !el.children) {
+        return `${currentIndent}- ${el.key}: ${el.value1}\n${currentIndent}+ ${el.key}: ${el.value2}`;
       }
 
       if (el.status === 'changed type') {
         return `${currentIndent}- ${el.key}: ${iter(
-          el.file1,
+          el.value1,
           depth + depthCoeff,
-        )}\n${currentIndent}+ ${el.key}: ${iter(el.file2, depth + depthCoeff)}`;
+        )}\n${currentIndent}+ ${el.key}: ${iter(el.value2, depth + depthCoeff)}`;
       }
 
       if (el.status === 'deleted') {
-        return `${currentIndent}- ${el.key}: ${iter(el.file1, depth + addDepth)}`;
+        return `${currentIndent}- ${el.key}: ${iter(
+          el.children || el.value,
+          depth + addDepth,
+        )}`;
       }
 
       if (el.status === 'new') {
-        return `${currentIndent}+ ${el.key}: ${iter(el.file2, depth + addDepth)}`;
+        return `${currentIndent}+ ${el.key}: ${iter(
+          el.children || el.value,
+          depth + addDepth,
+        )}`;
       }
 
       // deep in deleted/new
-      return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
+      return `${currentIndent}  ${el.key}: ${iter(
+        el.children || el.value,
+        depth + addDepth,
+      )}`;
     });
     return ['{', ...result, `${bracketIndent}}`].join('\n');
   };
