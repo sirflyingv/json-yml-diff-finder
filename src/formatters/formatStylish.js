@@ -18,10 +18,13 @@ const formatStylish = (diff) => {
 
     if (isTrueObj(data)) {
       // console.log(currentIndent.length);
-      const lines = Object.entries(data).map(
-        ([key, value]) =>
-          `    ${currentIndent}  ${key}: ${iter(value, depth + depthCoeff)}`,
-      );
+      const lines = Object.entries(data).map(([key, value]) => {
+        const line = `    ${currentIndent}  ${key}: ${iter(
+          value,
+          depth + depthCoeff,
+        )}`;
+        return line;
+      });
       return ['{', ...lines, `    ${bracketIndent}}`].join('\n');
     }
 
