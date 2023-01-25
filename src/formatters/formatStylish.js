@@ -46,9 +46,8 @@ const formatStylish = (diff) => {
       if (el.type === 'new') {
         return `${currentIndent}+ ${el.key}: ${iter(el.value, depth + addDepth)}`;
       }
-      if (el.type === 'not changed') {
-        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
-      }
+
+      return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
     });
     return ['{', ...result, `${bracketIndent}}`].join('\n');
   };
