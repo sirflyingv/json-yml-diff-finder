@@ -6,7 +6,7 @@ import {
   parseFileData,
 } from './parsers.js';
 
-import genDiffData from './genDiffDataRe.js';
+import genDiffData from './genDiffData.js';
 import chooseFormatter from './formatters/index.js';
 
 const genDiff = (filepath1, filepath2, formatName) => {

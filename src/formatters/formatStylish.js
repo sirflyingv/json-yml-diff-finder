@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { isTrueObj } from '../helpers.js';
 
 // config
 const spaceStep = 2;
@@ -15,47 +16,39 @@ const formatStylish = (diff) => {
       return `${data}`;
     }
 
+    if (isTrueObj(data)) {
+      console.log(currentIndent.length);
+      const lines = Object.entries(data).map(
+        ([key, value]) =>
+          `    ${currentIndent}  ${key}: ${iter(value, depth + depthCoeff)}`,
+      );
+      return ['{', ...lines, `    ${bracketIndent}}`].join('\n');
+    }
+
     const result = data.map((el) => {
-      const addDepth = el.children ? depthCoeff : 0;
+      const addDepth = el.type === 'nested' ? depthCoeff : 0;
 
-      if (el.status === 'not changed' && !el.children) {
-        return `${currentIndent}  ${el.key}: ${el.value}`;
-      }
-
-      if (el.status === 'changed' && el.children) {
+      if (el.type === 'nested') {
         return `${currentIndent}  ${el.key}: ${iter(el.children, depth + addDepth)}`;
       }
 
-      if (el.status === 'changed' && !el.children) {
-        return `${currentIndent}- ${el.key}: ${el.value1}\n${currentIndent}+ ${el.key}: ${el.value2}`;
-      }
-
-      if (el.status === 'changed type') {
+      if (el.type === 'changed') {
         return `${currentIndent}- ${el.key}: ${iter(
           el.value1,
-          depth + depthCoeff,
-        )}\n${currentIndent}+ ${el.key}: ${iter(el.value2, depth + depthCoeff)}`;
-      }
-
-      if (el.status === 'deleted') {
-        return `${currentIndent}- ${el.key}: ${iter(
-          el.children || el.value,
           depth + addDepth,
-        )}`;
+        )}\n${currentIndent}+ ${el.key}: ${iter(el.value2, depth + addDepth)}`;
       }
 
-      if (el.status === 'new') {
-        return `${currentIndent}+ ${el.key}: ${iter(
-          el.children || el.value,
-          depth + addDepth,
-        )}`;
+      if (el.type === 'deleted') {
+        return `${currentIndent}- ${el.key}: ${iter(el.value, depth + addDepth)}`;
       }
 
-      // deep in deleted/new
-      return `${currentIndent}  ${el.key}: ${iter(
-        el.children || el.value,
-        depth + addDepth,
-      )}`;
+      if (el.type === 'new') {
+        return `${currentIndent}+ ${el.key}: ${iter(el.value, depth + addDepth)}`;
+      }
+      if (el.type === 'not changed') {
+        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
+      }
     });
     return ['{', ...result, `${bracketIndent}}`].join('\n');
   };
