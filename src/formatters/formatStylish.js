@@ -17,7 +17,7 @@ const formatStylish = (diff) => {
     }
 
     if (isTrueObj(data)) {
-      console.log(currentIndent.length);
+      // console.log(currentIndent.length);
       const lines = Object.entries(data).map(
         ([key, value]) =>
           `    ${currentIndent}  ${key}: ${iter(value, depth + depthCoeff)}`,
