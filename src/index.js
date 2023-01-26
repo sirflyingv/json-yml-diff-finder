@@ -1,10 +1,5 @@
-// prettier-ignore
-import {
-  normalizePath,
-  getFormat,
-  readFile,
-  parseFileData,
-} from './parsers.js';
+import parseFileData from './parsers.js';
+import { normalizePath, getFormat, readFile } from './helpers.js';
 
 import genDiffData from './genDiffData.js';
 import chooseFormatter from './formatters/index.js';

@@ -2,9 +2,11 @@ import formatPlain from './formatPlain.js';
 import formatStylish from './formatStylish.js';
 import debug from './debug.js';
 
-export default (formatName) => {
-  if (formatName === 'plain') return formatPlain;
-  if (formatName === 'json') return JSON.stringify;
-  if (formatName === 'debug') return debug;
-  return formatStylish;
+const mapping = {
+  plain: formatPlain,
+  json: JSON.stringify,
+  stylish: formatStylish,
+  debug,
 };
+
+export default (formatName) => mapping[formatName];
