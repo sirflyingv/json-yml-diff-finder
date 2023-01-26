@@ -11,9 +11,8 @@ programGendiff
   .version('0.5.0')
   .argument('<filepath1>', 'path to first file')
   .argument('<filepath2>', 'path to second file')
-  .option('-f, --format <format>', 'output format')
-  .action((filepath1, filepath2, { format = 'stylish' }) => {
-    console.log('format', format);
+  .option('-f, --format <format>', 'output format', 'stylish')
+  .action((filepath1, filepath2, { format }) => {
     const diff = genDiff(filepath1, filepath2, format);
     console.log(diff);
   });
