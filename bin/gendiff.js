@@ -4,7 +4,6 @@ import { Command } from 'commander';
 import genDiff from '../index.js';
 
 const programGendiff = new Command();
-console.log('KEKW');
 programGendiff
   .name('gendiff')
   .description('Compares two configuration files and shows a difference.')
@@ -13,7 +12,6 @@ programGendiff
   .argument('<filepath2>', 'path to second file')
   .option('-f, --format <format>', 'output format', 'stylish')
   .action((filepath1, filepath2, options) => {
-    console.log(options);
     const { format } = options;
     const diff = genDiff(filepath1, filepath2, format);
     console.log(diff);
