@@ -4,8 +4,8 @@ import { normalizePath, getFormat, readFile } from './helpers.js';
 import genDiffData from './genDiffData.js';
 import chooseFormatter from './formatters/index.js';
 
-const genDiff = (filepath1, filepath2, formatName) => {
-  // console.log('file1:', filepath1, 'file2:', filepath2, 'formatName:', formatName);
+const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
+  console.log('file1:', filepath1, 'file2:', filepath2, 'formatName:', formatName);
   const path1 = normalizePath(filepath1);
   const fileFormat1 = getFormat(path1);
   const fileData1 = readFile(path1);
