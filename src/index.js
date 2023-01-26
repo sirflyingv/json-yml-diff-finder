@@ -17,6 +17,7 @@ const genDiff = (filepath1, filepath2, formatName) => {
 
   const diff = genDiffData(parsedData1, parsedData2);
   const formatDiffData = chooseFormatter(formatName);
+  console.log(formatDiffData);
   return formatDiffData(diff);
 };
 
