@@ -13,6 +13,7 @@ programGendiff
   .argument('<filepath2>', 'path to second file')
   .option('-f, --format <format>', 'output format')
   .action((filepath1, filepath2, { format = 'stylish' }) => {
+    console.log('file1:', filepath1, 'file2:', filepath2, 'format:', format);
     const diff = genDiff(filepath1, filepath2, format);
     console.log(diff);
   });
