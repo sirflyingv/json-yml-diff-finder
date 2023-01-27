@@ -2,14 +2,14 @@ import _ from 'lodash';
 import { isTrueObj } from '../helpers.js';
 
 // config
-const spaceStep = 2;
-const depthCoeff = 2; // but why it's 2??? Something wrong
 const replacer = ' ';
+const spaceStep = 4;
+const offset = 2;
 
 const formatStylish = (diff) => {
   const iter = (data, depth) => {
     const indentSize = depth * spaceStep;
-    const currentIndent = replacer.repeat(indentSize);
+    const currentIndent = replacer.repeat(indentSize - offset);
     const bracketIndent = replacer.repeat(indentSize - spaceStep);
     // final dead end
     if (!_.isObject(data)) {
@@ -17,41 +17,30 @@ const formatStylish = (diff) => {
     }
 
     if (isTrueObj(data)) {
-      // console.log(currentIndent.length);
       const lines = Object.entries(data).map(([key, value]) => {
-        const line = `    ${currentIndent}  ${key}: ${iter(
-          value,
-          depth + depthCoeff,
-        )}`;
+        const line = `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
         return line;
       });
-      return ['{', ...lines, `    ${bracketIndent}}`].join('\n');
+      return ['{', ...lines, `${bracketIndent}}`].join('\n');
     }
 
+    const mapping = {
+      nested: (el) => `${currentIndent}  ${el.key}: ${iter(el.children, depth + 1)}`,
+      changed: (el) =>
+        `${currentIndent}- ${el.key}: ${iter(el.value1, depth + 1)}` +
+        '\n' +
+        `${currentIndent}+ ${el.key}: ${iter(el.value2, depth + 1)}`,
+      new: (el) => `${currentIndent}+ ${el.key}: ${iter(el.value, depth + 1)}`,
+      deleted: (el) => `${currentIndent}- ${el.key}: ${iter(el.value, depth + 1)}`,
+      not_changed: (el) =>
+        `${currentIndent}  ${el.key}: ${iter(el.value, depth + 1)}`,
+    };
+
     const result = data.map((el) => {
-      const addDepth = el.type === 'nested' ? depthCoeff : 0;
-
-      if (el.type === 'nested') {
-        return `${currentIndent}  ${el.key}: ${iter(el.children, depth + addDepth)}`;
-      }
-
-      if (el.type === 'changed') {
-        return `${currentIndent}- ${el.key}: ${iter(
-          el.value1,
-          depth + addDepth,
-        )}\n${currentIndent}+ ${el.key}: ${iter(el.value2, depth + addDepth)}`;
-      }
-
-      if (el.type === 'deleted') {
-        return `${currentIndent}- ${el.key}: ${iter(el.value, depth + addDepth)}`;
-      }
-
-      if (el.type === 'new') {
-        return `${currentIndent}+ ${el.key}: ${iter(el.value, depth + addDepth)}`;
-      }
-
-      return `${currentIndent}  ${el.key}: ${iter(el.value, depth + addDepth)}`;
+      const makeLine = mapping[el.type];
+      return makeLine(el);
     });
+
     return ['{', ...result, `${bracketIndent}}`].join('\n');
   };
   return iter(diff, 1);
