@@ -24,29 +24,23 @@ const formatStylish = (diff) => {
       return ['{', ...lines, `${bracketIndent}}`].join('\n');
     }
 
-    // prettier-ignore
-    const mapping = {
-      nested: (el) => `${currentIndent}  ${el.key}: ${iter(el.children, depth + 1)}`,
-      changed(el) {
-        return (
-          `${currentIndent}- ${el.key}: ${iter(el.value1, depth + 1)}`
-          + '\n'
-          + `${currentIndent}+ ${el.key}: ${iter(el.value2, depth + 1)}`
-        );
-      },
-      new: (el) => `${currentIndent}+ ${el.key}: ${iter(el.value, depth + 1)}`,
-      deleted: (el) => `${currentIndent}- ${el.key}: ${iter(el.value, depth + 1)}`,
-      not_changed(el) {
-        return `${currentIndent}  ${el.key}: ${iter(el.value, depth + 1)}`;
-      },
-    };
-
     const result = data.map((el) => {
-      const makeLine = mapping[el.type];
-      return makeLine(el);
+      function makeLine(field, prefix = ' ') {
+        return `${currentIndent}${prefix} ${el.key}: ${iter(el[field], depth + 1)}`;
+      }
+      const mapping = {
+        nested: (makeStr) => makeStr('children'),
+        changed: (makeStr) => [makeStr('value1', '-'), makeStr('value2', '+')],
+        new: (makeStr) => makeStr('value', '+'),
+        deleted: (makeStr) => makeStr('value', '-'),
+        not_changed: (makeStr) => makeStr('value'),
+      };
+
+      const getLine = mapping[el.type](makeLine);
+      return getLine;
     });
 
-    return ['{', ...result, `${bracketIndent}}`].join('\n');
+    return ['{', ...result.flat(), `${bracketIndent}}`].join('\n');
   };
   return iter(diff, 1);
 };

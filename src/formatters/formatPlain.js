@@ -19,16 +19,15 @@ const formatPlain = (diff) => {
       const updatedValue = getPrintValue(el.value2);
       const newValue = getPrintValue(el.value);
 
-      if (el.type === 'changed') {
-        return `Property '${fullPath}' was updated. From ${originalValue} to ${updatedValue}`;
-      }
+      const mapping = {
+        changed: `Property '${fullPath}' was updated. From ${originalValue} to ${updatedValue}`,
+        new: `Property '${fullPath}' was added with value: ${newValue}`,
+        deleted: `Property '${fullPath}' was removed`,
+        not_changed: null,
+        nested: null,
+      };
 
-      if (el.type === 'deleted') return `Property '${fullPath}' was removed`;
-
-      if (el.type === 'new') {
-        return `Property '${fullPath}' was added with value: ${newValue}`;
-      }
-      return null; // cases that are not needed to be in output
+      return mapping[el.type];
     });
 
     return result.filter((el) => el !== null).join('\n');
