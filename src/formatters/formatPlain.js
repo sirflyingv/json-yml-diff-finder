@@ -4,8 +4,8 @@ const formatPlain = (diff) => {
   const iter = (data, path = '') => {
     const result = data.map((el) => {
       if (el.type === 'nested') {
-        const parentName = `${path}${el.key}.`;
-        return iter(el.children, parentName);
+        const parentPath = `${path}${el.key}.`;
+        return iter(el.children, parentPath);
       }
 
       const getPrintValue = (val) => {
