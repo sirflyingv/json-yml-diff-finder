@@ -16,31 +16,31 @@ const formatStylish = (diff) => {
       return `${data}`;
     }
 
-    if (isTrueObj(data)) {
-      const lines = Object.entries(data).map(([key, value]) => {
-        const line = `${currentIndent}  ${key}: ${iter(value, depth + 1)}`;
-        return line;
-      });
-      return ['{', ...lines, `${bracketIndent}}`].join('\n');
+    function makeLine(keyName, fieldName, prefix = ' ') {
+      return `${currentIndent}${prefix} ${keyName}: ${iter(fieldName, depth + 1)}`;
     }
 
-    const result = data.map((el) => {
-      function makeLine(field, prefix = ' ') {
-        return `${currentIndent}${prefix} ${el.key}: ${iter(el[field], depth + 1)}`;
-      }
+    if (isTrueObj(data)) {
+      const lines = Object.entries(data).map(([key, value]) => makeLine(key, value));
+      return ['{', ...lines.flat(), `${bracketIndent}}`].join('\n');
+    }
+
+    const lines = data.map((el) => {
       const mapping = {
-        nested: (makeStr) => makeStr('children'),
-        changed: (makeStr) => [makeStr('value1', '-'), makeStr('value2', '+')],
-        new: (makeStr) => makeStr('value', '+'),
-        deleted: (makeStr) => makeStr('value', '-'),
-        not_changed: (makeStr) => makeStr('value'),
+        nested: (lineFormatter) => lineFormatter(el.key, el.children),
+        changed: (lineFormatter) => [
+          lineFormatter(el.key, el.value1, '-'),
+          lineFormatter(el.key, el.value2, '+'),
+        ],
+        new: (lineFormatter) => lineFormatter(el.key, el.value, '+'),
+        deleted: (lineFormatter) => lineFormatter(el.key, el.value, '-'),
+        not_changed: (lineFormatter) => lineFormatter(el.key, el.value),
       };
 
-      const getLine = mapping[el.type](makeLine);
-      return getLine;
+      return mapping[el.type](makeLine);
     });
 
-    return ['{', ...result.flat(), `${bracketIndent}}`].join('\n');
+    return ['{', ...lines.flat(), `${bracketIndent}}`].join('\n');
   };
   return iter(diff, 1);
 };
