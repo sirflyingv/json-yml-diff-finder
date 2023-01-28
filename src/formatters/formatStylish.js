@@ -22,7 +22,7 @@ const formatStylish = (diff) => {
 
     if (isTrueObj(data)) {
       const lines = Object.entries(data).map(([key, value]) => makeLine(key, value));
-      return ['{', ...lines.flat(), `${bracketIndent}}`].join('\n');
+      return ['{', ...lines, `${bracketIndent}}`].join('\n');
     }
 
     const lines = data.map((el) => {
