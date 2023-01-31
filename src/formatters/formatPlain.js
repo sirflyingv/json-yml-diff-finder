@@ -1,5 +1,11 @@
 import _ from 'lodash';
 
+export const getPrintValue = (val) => {
+  if (_.isObject(val)) return '[complex value]';
+  if (_.isString(val)) return `'${val}'`;
+  return val;
+};
+
 const formatPlain = (diff) => {
   const iter = (data, path = '') => {
     const result = data.map((el) => {
@@ -7,12 +13,6 @@ const formatPlain = (diff) => {
         const parentPath = `${path}${el.key}.`;
         return iter(el.children, parentPath);
       }
-
-      const getPrintValue = (val) => {
-        if (_.isObject(val)) return '[complex value]';
-        if (_.isString(val)) return `'${val}'`;
-        return val;
-      };
 
       const fullPath = path + el.key;
       const originalValue = getPrintValue(el.value1);

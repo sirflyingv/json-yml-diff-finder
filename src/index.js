@@ -2,7 +2,7 @@ import parseFileData from './parsers.js';
 import { normalizePath, getFormat, readFile } from './helpers.js';
 
 import genDiffData from './genDiffData.js';
-import chooseFormatter from './formatters/index.js';
+import formatDiff from './formatters/index.js';
 
 const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const path1 = normalizePath(filepath1);
@@ -16,8 +16,7 @@ const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const parsedData2 = parseFileData(fileData2, fileFormat2);
 
   const diff = genDiffData(parsedData1, parsedData2);
-  const formatDiffData = chooseFormatter(formatName);
-  return formatDiffData(diff);
+  return formatDiff(formatName, diff);
 };
 
 export default genDiff;

@@ -6,23 +6,25 @@ const replacer = ' ';
 const spaceStep = 4;
 const offset = 2;
 
+const getCurrentIndent = (depth) => replacer.repeat(depth * spaceStep - offset);
+const getBracketIndent = (depth) => replacer.repeat(depth * spaceStep - spaceStep);
+
 const formatStylish = (diff) => {
-  const iter = (data, depth) => {
-    const indentSize = depth * spaceStep;
-    const currentIndent = replacer.repeat(indentSize - offset);
-    const bracketIndent = replacer.repeat(indentSize - spaceStep);
+  function iter(data, depth) {
     // final dead end
     if (!_.isObject(data)) {
-      return `${data}`;
+      return String(data);
     }
 
     function makeLine(keyName, fieldName, prefix = ' ') {
-      return `${currentIndent}${prefix} ${keyName}: ${iter(fieldName, depth + 1)}`;
+      return `${getCurrentIndent(depth)}${prefix} ${keyName}: ${iter(
+        fieldName,
+        depth + 1,
+      )}`;
     }
-
     if (isTrueObj(data)) {
       const lines = Object.entries(data).map(([key, value]) => makeLine(key, value));
-      return ['{', ...lines, `${bracketIndent}}`].join('\n');
+      return ['{', ...lines, `${getBracketIndent(depth)}}`].join('\n');
     }
 
     const lines = data.map((el) => {
@@ -40,8 +42,8 @@ const formatStylish = (diff) => {
       return mapping[el.type](makeLine);
     });
 
-    return ['{', ...lines.flat(), `${bracketIndent}}`].join('\n');
-  };
+    return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
+  }
   return iter(diff, 1);
 };
 

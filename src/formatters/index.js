@@ -9,4 +9,9 @@ const mapping = {
   debug,
 };
 
-export default (formatName) => mapping[formatName];
+const formatDiff = (formatName, diff) => {
+  const formatter = mapping[formatName];
+  return formatter(diff);
+};
+
+export default formatDiff;
