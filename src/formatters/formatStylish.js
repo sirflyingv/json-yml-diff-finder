@@ -12,34 +12,28 @@ const getBracketIndent = (depth) => replacer.repeat(depth * spaceStep - spaceSte
 const formatStylish = (diff) => {
   function iter(data, depth) {
     // final dead end
-    if (!_.isObject(data)) {
-      return String(data);
-    }
+    if (!_.isObject(data)) return String(data);
 
-    function makeLine(keyName, fieldName, prefix = ' ') {
-      return `${getCurrentIndent(depth)}${prefix} ${keyName}: ${iter(
-        fieldName,
-        depth + 1,
-      )}`;
-    }
     if (isTrueObj(data)) {
-      const lines = Object.entries(data).map(([key, value]) => makeLine(key, value));
+      const lines = Object.entries(data).map(
+        ([key, value]) => `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`,
+      );
       return ['{', ...lines, `${getBracketIndent(depth)}}`].join('\n');
     }
 
     const lines = data.map((el) => {
       const mapping = {
-        nested: (lineFormatter) => lineFormatter(el.key, el.children),
-        changed: (lineFormatter) => [
-          lineFormatter(el.key, el.value1, '-'),
-          lineFormatter(el.key, el.value2, '+'),
+        nested: `${getCurrentIndent(depth)}  ${el.key}: ${iter(el.children, depth + 1)}`,
+        changed: [
+          `${getCurrentIndent(depth)}- ${el.key}: ${iter(el.value1, depth + 1)}`,
+          `${getCurrentIndent(depth)}+ ${el.key}: ${iter(el.value2, depth + 1)}`,
         ],
-        new: (lineFormatter) => lineFormatter(el.key, el.value, '+'),
-        deleted: (lineFormatter) => lineFormatter(el.key, el.value, '-'),
-        not_changed: (lineFormatter) => lineFormatter(el.key, el.value),
+        new: `${getCurrentIndent(depth)}+ ${el.key}: ${iter(el.value, depth + 1)}`,
+        deleted: `${getCurrentIndent(depth)}- ${el.key}: ${iter(el.value, depth + 1)}`,
+        not_changed: `${getCurrentIndent(depth)}  ${el.key}: ${iter(el.value, depth + 1)}`,
       };
 
-      return mapping[el.type](makeLine);
+      return mapping[el.type];
     });
 
     return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
