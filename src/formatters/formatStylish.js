@@ -18,7 +18,7 @@ const formatStylish = (diff) => {
       const lines = Object.entries(data).map(
         ([key, value]) => `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`,
       );
-      return ['{', ...lines, `${getBracketIndent(depth)}}`].join('\n');
+      return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
     }
 
     const lines = data.map((el) => {

@@ -1,38 +1,38 @@
 import _ from 'lodash';
 
-export const getPrintValue = (val) => {
+const getPrintValue = (val) => {
   if (_.isObject(val)) return '[complex value]';
   if (_.isString(val)) return `'${val}'`;
   return val;
 };
 
-const formatPlain = (diff) => {
-  const iter = (data, path = '') => {
-    const result = data.map((el) => {
-      if (el.type === 'nested') {
-        const parentPath = `${path}${el.key}.`;
-        return iter(el.children, parentPath);
-      }
+const getValue1 = (node) => getPrintValue(node.value1);
+const getValue2 = (node) => getPrintValue(node.value2);
+const getValue = (node) => getPrintValue(node.value);
+const getPath = (node, path) => `${path || ''}${node.key}`;
 
-      const fullPath = path + el.key;
-      const originalValue = getPrintValue(el.value1);
-      const updatedValue = getPrintValue(el.value2);
-      const newValue = getPrintValue(el.value);
+const mapping = {
+  changed(node, path) {
+    return `Property '${getPath(node, path)}' was updated. From ${getValue1(node)} to ${getValue2(
+      node,
+    )}`;
+  },
+  new: (node, path) => `Property '${getPath(node, path)}' was added with value: ${getValue(node)}`,
+  deleted: (node, path) => `Property '${getPath(node, path)}' was removed`,
+  not_changed: () => null,
+  nested: (node, path, iter) => iter(node.children || [], `${path || ''}${node.key}.`),
+};
 
-      const mapping = {
-        changed: `Property '${fullPath}' was updated. From ${originalValue} to ${updatedValue}`,
-        new: `Property '${fullPath}' was added with value: ${newValue}`,
-        deleted: `Property '${fullPath}' was removed`,
-        not_changed: null,
-        nested: null,
-      };
+const formatPlain = (diff, path = '') => {
+  const result = diff
+    .map((node) => {
+      const fn = mapping[node.type];
+      return fn(node, path, formatPlain);
+    })
+    .filter((el) => el !== null)
+    .join('\n');
 
-      return mapping[el.type];
-    });
-
-    return result.filter((el) => el !== null).join('\n');
-  };
-  return iter(diff);
+  return result;
 };
 
 export default formatPlain;
