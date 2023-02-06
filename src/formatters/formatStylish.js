@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { isTrueObj } from '../helpers.js';
 
 // config
@@ -6,39 +5,46 @@ const replacer = ' ';
 const spaceStep = 4;
 const offset = 2;
 
-const getCurrentIndent = (depth) => replacer.repeat(depth * spaceStep - offset);
+const getIndent = (depth) => replacer.repeat(depth * spaceStep - offset);
 const getBracketIndent = (depth) => replacer.repeat(depth * spaceStep - spaceStep);
 
-const formatStylish = (diff) => {
-  function iter(data, depth) {
-    // final dead end
-    if (!_.isObject(data)) return String(data);
+const stringifyData = (data, depth = 1) => {
+  if (!isTrueObj(data)) return String(data);
 
-    if (isTrueObj(data)) {
-      const lines = Object.entries(data).map(
-        ([key, value]) => `${getCurrentIndent(depth)}  ${key}: ${iter(value, depth + 1)}`,
-      );
-      return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
-    }
+  const lines = Object.entries(data).map(
+    ([key, value]) => `${getIndent(depth)}  ${key}: ${stringifyData(value, depth + 1)}`,
+  );
+  return ['{', ...lines, `${getBracketIndent(depth)}}`].join('\n');
+};
 
-    const lines = data.map((el) => {
-      const mapping = {
-        nested: `${getCurrentIndent(depth)}  ${el.key}: ${iter(el.children, depth + 1)}`,
-        changed: [
-          `${getCurrentIndent(depth)}- ${el.key}: ${iter(el.value1, depth + 1)}`,
-          `${getCurrentIndent(depth)}+ ${el.key}: ${iter(el.value2, depth + 1)}`,
-        ],
-        new: `${getCurrentIndent(depth)}+ ${el.key}: ${iter(el.value, depth + 1)}`,
-        deleted: `${getCurrentIndent(depth)}- ${el.key}: ${iter(el.value, depth + 1)}`,
-        not_changed: `${getCurrentIndent(depth)}  ${el.key}: ${iter(el.value, depth + 1)}`,
-      };
+const mapping = {
+  nested(node, depth, iter) {
+    return `${getIndent(depth)}  ${node.key}: ${iter(node.children, depth + 1)}`;
+  },
+  changed(node, depth) {
+    return [
+      `${getIndent(depth)}- ${node.key}: ${stringifyData(node.value1, depth + 1)}`,
+      `${getIndent(depth)}+ ${node.key}: ${stringifyData(node.value2, depth + 1)}`,
+    ];
+  },
+  new(node, depth) {
+    return `${getIndent(depth)}+ ${node.key}: ${stringifyData(node.value, depth + 1)}`;
+  },
+  deleted(node, depth) {
+    return `${getIndent(depth)}- ${node.key}: ${stringifyData(node.value, depth + 1)}`;
+  },
+  not_changed(node, depth) {
+    return `${getIndent(depth)}  ${node.key}: ${stringifyData(node.value, depth + 1)}`;
+  },
+};
 
-      return mapping[el.type];
-    });
+const formatStylish = (diff, depth = 1) => {
+  const lines = diff.map((node) => {
+    const makeString = mapping[node.type];
+    return makeString(node, depth, formatStylish);
+  });
 
-    return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
-  }
-  return iter(diff, 1);
+  return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
 };
 
 export default formatStylish;

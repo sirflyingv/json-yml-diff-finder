@@ -20,16 +20,16 @@ const mapping = {
   new: (node, path) => `Property '${getPath(node, path)}' was added with value: ${getValue(node)}`,
   deleted: (node, path) => `Property '${getPath(node, path)}' was removed`,
   not_changed: () => null,
-  nested: (node, path, iter) => iter(node.children || [], `${path || ''}${node.key}.`),
+  nested: (node, path, iter) => iter(node.children, `${getPath(node, path)}.`),
 };
 
-const formatPlain = (diff, path = '') => {
-  const result = diff
+const formatPlain = (data, path = '') => {
+  const result = data
     .map((node) => {
-      const fn = mapping[node.type];
-      return fn(node, path, formatPlain);
+      const makeString = mapping[node.type];
+      return makeString(node, path, formatPlain);
     })
-    .filter((el) => el !== null)
+    .filter((node) => node !== null)
     .join('\n');
 
   return result;
