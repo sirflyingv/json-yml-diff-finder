@@ -23,8 +23,8 @@ const mapping = {
   nested: (node, path, iter) => iter(node.children, `${getPath(node, path)}.`),
 };
 
-const formatPlain = (data, path = '') => {
-  const result = data
+const formatPlain = (diff, path = '') => {
+  const result = diff
     .map((node) => {
       const makeString = mapping[node.type];
       return makeString(node, path, formatPlain);
