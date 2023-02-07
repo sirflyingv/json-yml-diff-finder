@@ -7,6 +7,13 @@ const getPrintValue = (val) => {
 };
 
 const mapping = {
+  root(node, path, iter) {
+    const lines = node.children.map((child) => {
+      const makeString = mapping[child.type];
+      return makeString(child, path, iter);
+    });
+    return lines.flat().join('\n');
+  },
   changed(node, path) {
     return `Property '${path}${node.key}' was updated. From ${getPrintValue(
       node.value1,
@@ -20,16 +27,9 @@ const mapping = {
   nested: (node, path, iter) => iter(node.children, `${path}${node.key}.`),
 };
 
-const formatPlain = (diff, path = '') => {
-  const result = diff
-    .map((node) => {
-      const makeString = mapping[node.type];
-      return makeString(node, path, formatPlain);
-    })
-    .flat()
-    .join('\n');
-
-  return result;
+const formatPlain = (node, path = '') => {
+  const makeString = mapping[node.type];
+  return makeString(node, path, formatPlain);
 };
 
 export default formatPlain;

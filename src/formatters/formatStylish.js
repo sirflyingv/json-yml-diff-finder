@@ -18,6 +18,13 @@ const stringifyData = (data, depth = 1) => {
 };
 
 const mapping = {
+  root(node, depth, iter) {
+    const lines = node.children.map((child) => {
+      const makeString = mapping[child.type];
+      return makeString(child, depth, iter);
+    });
+    return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
+  },
   nested(node, depth, iter) {
     return `${getIndent(depth)}  ${node.key}: ${iter(node.children, depth + 1)}`;
   },
@@ -38,13 +45,9 @@ const mapping = {
   },
 };
 
-const formatStylish = (diff, depth = 1) => {
-  const lines = diff.map((node) => {
-    const makeString = mapping[node.type];
-    return makeString(node, depth, formatStylish);
-  });
-
-  return ['{', ...lines.flat(), `${getBracketIndent(depth)}}`].join('\n');
+const formatStylish = (node, depth = 1) => {
+  const makeString = mapping[node.type];
+  return makeString(node, depth, formatStylish);
 };
 
 export default formatStylish;

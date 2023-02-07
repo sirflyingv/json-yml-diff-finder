@@ -27,7 +27,9 @@ const genDiffData = (data1, data2) => {
       value2,
     };
   });
-  return _.orderBy(result, ['key']);
+
+  const root = { type: 'root', children: _.orderBy(result, ['key']) };
+  return root;
 };
 
 export default genDiffData;
