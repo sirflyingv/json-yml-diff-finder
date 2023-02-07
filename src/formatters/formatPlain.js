@@ -6,21 +6,18 @@ const getPrintValue = (val) => {
   return val;
 };
 
-const getValue1 = (node) => getPrintValue(node.value1);
-const getValue2 = (node) => getPrintValue(node.value2);
-const getValue = (node) => getPrintValue(node.value);
-const getPath = (node, path) => `${path || ''}${node.key}`;
-
 const mapping = {
   changed(node, path) {
-    return `Property '${getPath(node, path)}' was updated. From ${getValue1(node)} to ${getValue2(
-      node,
-    )}`;
+    return `Property '${path}${node.key}' was updated. From ${getPrintValue(
+      node.value1,
+    )} to ${getPrintValue(node.value2)}`;
   },
-  new: (node, path) => `Property '${getPath(node, path)}' was added with value: ${getValue(node)}`,
-  deleted: (node, path) => `Property '${getPath(node, path)}' was removed`,
-  not_changed: () => null,
-  nested: (node, path, iter) => iter(node.children, `${getPath(node, path)}.`),
+  new(node, path) {
+    return `Property '${path}${node.key}' was added with value: ${getPrintValue(node.value)}`;
+  },
+  deleted: (node, path) => `Property '${path}${node.key}' was removed`,
+  unchanged: () => [],
+  nested: (node, path, iter) => iter(node.children, `${path}${node.key}.`),
 };
 
 const formatPlain = (diff, path = '') => {
@@ -29,7 +26,7 @@ const formatPlain = (diff, path = '') => {
       const makeString = mapping[node.type];
       return makeString(node, path, formatPlain);
     })
-    .filter((node) => node !== null)
+    .flat()
     .join('\n');
 
   return result;

@@ -33,7 +33,7 @@ const mapping = {
   deleted(node, depth) {
     return `${getIndent(depth)}- ${node.key}: ${stringifyData(node.value, depth + 1)}`;
   },
-  not_changed(node, depth) {
+  unchanged(node, depth) {
     return `${getIndent(depth)}  ${node.key}: ${stringifyData(node.value, depth + 1)}`;
   },
 };

@@ -18,7 +18,7 @@ const genDiffData = (data1, data2) => {
     if (keyIsDeleted) return { key, type: 'deleted', value: value1 };
 
     const valuesAreEqual = _.isEqual(value1, value2);
-    if (valuesAreEqual) return { key, type: 'not_changed', value: value1 };
+    if (valuesAreEqual) return { key, type: 'unchanged', value: value1 };
 
     return {
       key,
