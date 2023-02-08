@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { isTrueObj } from './helpers.js';
 
 const genDiffData = (data1, data2) => {
-  const result = Object.keys({ ...data1, ...data2 }).map((key) => {
+  const nodes = Object.keys({ ...data1, ...data2 }).map((key) => {
     const value1 = data1[key];
     const value2 = data2[key];
 
@@ -28,7 +28,7 @@ const genDiffData = (data1, data2) => {
     };
   });
 
-  const root = { type: 'root', children: _.orderBy(result, ['key']) };
+  const root = { type: 'root', children: _.orderBy(nodes, ['key']) };
   return root;
 };
 
