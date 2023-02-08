@@ -28,7 +28,7 @@ const mapping = {
 };
 
 const formatPlain = (node, path = '') => {
-  const makeString = mapping[node.type];
+  const makeString = mapping.root;
   return makeString(node, path, formatPlain);
 };
 

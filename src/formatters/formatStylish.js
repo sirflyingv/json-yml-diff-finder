@@ -45,9 +45,9 @@ const mapping = {
   },
 };
 
-const formatStylish = (node, depth = 1) => {
-  const makeString = mapping[node.type];
-  return makeString(node, depth, formatStylish);
+const formatStylish = (diff, depth = 1) => {
+  const makeString = mapping.root;
+  return makeString(diff, depth, formatStylish);
 };
 
 export default formatStylish;
