@@ -27,9 +27,6 @@ const mapping = {
   nested: (node, path, iter) => iter(node.children, `${path}${node.key}.`),
 };
 
-const formatPlain = (node, path = '') => {
-  const makeString = mapping.root;
-  return makeString(node, path, formatPlain);
-};
+const formatPlain = (node, path = '') => mapping.root(node, path, formatPlain);
 
 export default formatPlain;
