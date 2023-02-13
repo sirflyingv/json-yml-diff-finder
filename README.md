@@ -9,12 +9,6 @@ A JavaScript program that compares data in two files and shows the difference. G
 [![Test Coverage](https://api.codeclimate.com/v1/badges/907c21406f66906d8c18/test_coverage)](https://codeclimate.com/github/sirflyingv/frontend-project-46/test_coverage)
 [![tests](https://github.com/sirflyingv/frontend-project-46/actions/workflows/tests.yml/badge.svg)](https://github.com/sirflyingv/frontend-project-46/actions/workflows/tests.yml)
 
-Stylish print of 2 tree files diff [asciinema](https://asciinema.org/a/6w66dlNKUMzIJnvFujRJdTghJ)
-
-Both 'stylish' and 'plain' types of output [asciinema](https://asciinema.org/a/Imgcsr85kjQZEjnZbgdyNshk7)
-
-JSON output [asciinema](https://asciinema.org/a/GRxSWMIaoJSdqN7vH4BLztKEJ)
-
 ### Installation
 
 To install GenDiff, download source code and run the following command in repo directory:
@@ -24,6 +18,13 @@ make publish
 sudo npm link
 ```
 ### Usage 
+
+In both CLI and node module modes GenDiff takes as arguments two paths to files and option of formatting style.
+There are 3 formatting styles - "stylish" (default), "plain" and "JSON".
+
+'stylish' and 'plain' types of output [asciinema](https://asciinema.org/a/Imgcsr85kjQZEjnZbgdyNshk7)
+
+JSON output [asciinema](https://asciinema.org/a/GRxSWMIaoJSdqN7vH4BLztKEJ)
 
 #### CLI
 ```
@@ -46,3 +47,11 @@ Options:
 In directory of your project run:
 
 `npm install <path to gendiff repo>`
+
+in your JS file: 
+```
+import genDiff from '@hexlet/code';
+
+const diff = genDiff(filepath1, filepath2, formatName)
+```
+
