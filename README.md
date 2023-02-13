@@ -22,7 +22,7 @@ sudo npm link
 In both CLI and node module modes GenDiff takes as arguments two paths to files and option of formatting style.
 There are 3 formatting styles - "stylish" (default), "plain" and "JSON".
 
-'stylish' and 'plain' types of output [asciinema](https://asciinema.org/a/Imgcsr85kjQZEjnZbgdyNshk7)
+"Stylish" and "plain" formats of output [asciinema](https://asciinema.org/a/Imgcsr85kjQZEjnZbgdyNshk7)
 
 JSON output [asciinema](https://asciinema.org/a/GRxSWMIaoJSdqN7vH4BLztKEJ)
 
