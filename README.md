@@ -1,6 +1,6 @@
 ### GenDiff
 
-A JavaScript program that compares data in two files and shows the difference. GenDiff can work with JSON and YAML format and can be used as both a CLI tool and a Node.js module.
+A JavaScript program that compares data in two files and shows the difference. GenDiff can work with JSON and YAML formats and can be used both as a CLI tool and a Node.js module.
 
 ### Hexlet tests and linter status:
 
