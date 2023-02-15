@@ -52,6 +52,6 @@ in your JS file:
 ```
 import genDiff from '@hexlet/code';
 
-const diff = genDiff(filepath1, filepath2, formatName)
+const diff = genDiff(<filepath1>, <filepath2>, <formatName>);
 ```
 
