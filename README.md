@@ -16,8 +16,6 @@ Educational project from Hexlet programming school.
 To install GenDiff, download source code and run the following command in repo directory:
 ```
 make install
-make publish
-sudo npm link
 ```
 ### Usage 
 
