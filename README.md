@@ -2,6 +2,8 @@
 
 A JavaScript program that compares data in two files and shows the difference. GenDiff can work with JSON and YAML formats and can be used both as a CLI tool and a Node.js module.
 
+Educational project from Hexlet programming school.
+
 ### Hexlet tests and linter status:
 
 [![Actions Status](https://github.com/sirflyingv/frontend-project-46/workflows/hexlet-check/badge.svg)](https://github.com/sirflyingv/frontend-project-46/actions)
