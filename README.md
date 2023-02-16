@@ -42,7 +42,7 @@ Options:
   -h, --help             display help for command
 ```
 
-#### Node module
+#### Node.js module
 
 In directory of your project run:
 
