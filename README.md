@@ -14,10 +14,12 @@ Educational project from Hexlet programming school.
 ### Installation
 
 To install GenDiff, download source code and run the following command in repo directory:
+
 ```
 make install
 ```
-### Usage 
+
+### Usage
 
 In both CLI and node module modes GenDiff takes as arguments two paths to files and option of formatting style.
 There are 3 formatting styles - "stylish" (default), "plain" and "JSON".
@@ -27,6 +29,7 @@ There are 3 formatting styles - "stylish" (default), "plain" and "JSON".
 JSON output [asciinema](https://asciinema.org/a/GRxSWMIaoJSdqN7vH4BLztKEJ)
 
 #### CLI
+
 ```
 Usage: gendiff [options] <filepath1> <filepath2>
 
@@ -48,10 +51,10 @@ In directory of your project run:
 
 `npm install <path to gendiff repo>`
 
-in your JS file: 
+in your JS file:
+
 ```
 import genDiff from '@hexlet/code';
 
 const diff = genDiff(<filepath1>, <filepath2>, <formatName>);
 ```
-
